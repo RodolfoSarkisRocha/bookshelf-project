@@ -4,6 +4,7 @@ import bookCover from '../../assets/book-cover.jpg';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Sorter from '../../components/Sorter/Sorter';
+import Button from '../../components/Button/Button';
 
 const mockBooks = [];
 
@@ -11,7 +12,7 @@ const mockCategories = {
   reading: 'Currently Reading',
   wantToRead: 'Want to Read',
   read: 'Read'
-}
+};
 
 for (let i = 0; i < 10; i++) {
   mockBooks.push({
@@ -23,7 +24,7 @@ for (let i = 0; i < 10; i++) {
     category: mockCategories.reading,
     deleted: 'false'
   });
-}
+};
 
 export default props => {
 
@@ -34,7 +35,7 @@ export default props => {
     if (filterHeader.className === 'filter-header') filterHeader.className += ' expanded-filters';
     else filterHeader.className = 'filter-header';
     setExpandedFilters(!expandedFilters);
-  }
+  };
 
   const headerWithFilter = () => {
 
@@ -62,20 +63,31 @@ export default props => {
 
     return (
       <div id='filterHeader' className='filter-header'>
-        <div onClick={handleExpandFilters} className='title-content'>
-          <div>Sort by</div>
-          <FontAwesomeIcon
-            className={expandedFilters ? 'rotate-down' : 'rotate-up'}
-            icon={['fas', 'arrow-down']}
-          />
+        <div className='title-content'>
+          <div>Books</div>
+          <div className={'flex-row-end'}>
+            <div className='flex-row-center'>
+              {/* <Button className='mr10' onClick={() => setOpenBookDetails(true)}>
+                <FontAwesomeIcon className='mr10' icon={['fas', 'plus']} />
+                <div>Add a new book</div>
+              </Button> */}
+              <Button onClick={handleExpandFilters}>
+                <FontAwesomeIcon
+                  className={expandedFilters ? 'arrow-down' : 'arrow-up'}
+                  icon={['fas', 'arrow-down']}
+                />
+                <div>Sort by</div>
+              </Button>
+            </div>
+          </div>
         </div>
         {<Sorter
           filters={filters}
-          parentSorterFunction={handleSortDirectionChange}
+          onSort={handleSortDirectionChange}
         />}
       </div>
     )
-  }
+  };
 
   return (
     <Fragment>
@@ -97,5 +109,5 @@ export default props => {
         ))}
       </div>
     </Fragment>
-  )
-}
+  );
+};

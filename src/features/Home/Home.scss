@@ -46,7 +46,7 @@
   overflow: hidden;
   border-radius: 5px;
   margin-bottom: 10px;
-  max-height: 40px;
+  max-height: 50px;
   transition: max-height 0.5s cubic-bezier(0, 1, 0, 1);
 }
 
@@ -58,28 +58,28 @@
 .title-content {
   color: #f1f1f1;
   height: 30px;
-  cursor: pointer;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
 .filter-content {
-  
 }
 
-.rotate-down {
+.arrow-down {
   transition: transform 0.2s ease-in-out;
   -webkit-transition: -webkit-transform 0.2s ease-in-out;
   -webkit-transform: rotate(180deg);
   transform: rotate(180deg);
+  margin-right: 10px;
 }
 
-.rotate-up {
+.arrow-up {
   transition: transform 0.2s ease-in-out;
   -webkit-transition: -webkit-transform 0.2s ease-in-out;
   -webkit-transform: rotate(0deg);
   transform: rotate(0deg);
+  margin-right: 10px;
 }
 
 .book-title {

@@ -4,7 +4,7 @@ import './Sorter.scss'
 
 export default props => {
 
-  const { parentSorterFunction, filters } = props;
+  const { onSort, filters } = props;
 
   const [sorterDirection, setSorterDirection] = useState(null);
   const [dataIndex, setDataIndex] = useState(null);
@@ -38,7 +38,7 @@ export default props => {
     // Sets the arrow icons flag to change the one correspondent to the data index and direction
     setSorterIconFlag([dataIndex, sorterDirection]);
 
-    parentSorterFunction(payload);
+    onSort(payload);
   }, [sorterDirection])
 
   return (
