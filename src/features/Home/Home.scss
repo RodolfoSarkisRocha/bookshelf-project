@@ -1,0 +1,103 @@
+@import "../../helpers/utils.scss";
+@import "../../helpers/variables.scss";
+
+.category-section {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  overflow-x: scroll;
+  -webkit-overflow-scrolling: touch;
+  &::-webkit-scrollbar {
+    height: 8px;
+  }
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+  margin-bottom: 15px;
+}
+
+.book-item {
+  display: flex;
+  box-sizing: border-box;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 5px;
+  margin: 5px;
+}
+
+.filter-header {
+  padding: 10px;
+  display: flex;
+  font-size: 18px;
+  background-color: #225175;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  max-height: 50px;
+  transition: max-height 0.5s cubic-bezier(0, 1, 0, 1);
+}
+
+.expanded-filters {
+  transition: max-height 1s ease-in-out;
+  max-height: 500px;
+}
+
+.title-content {
+  color: #f1f1f1;
+  height: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.filter-content {
+}
+
+.arrow-down {
+  transition: transform 0.2s ease-in-out;
+  -webkit-transition: -webkit-transform 0.2s ease-in-out;
+  -webkit-transform: rotate(180deg);
+  transform: rotate(180deg);
+  margin-right: 10px;
+}
+
+.arrow-up {
+  transition: transform 0.2s ease-in-out;
+  -webkit-transition: -webkit-transform 0.2s ease-in-out;
+  -webkit-transform: rotate(0deg);
+  transform: rotate(0deg);
+  margin-right: 10px;
+}
+
+.book-title {
+  font-size: 18px;
+  font-weight: bold;
+  padding: 5px;
+  word-break: break-all;
+}
+
+.category-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  background-color: #225175;
+  border-radius: 5px;
+  color: #edf0f1;
+  a {
+    text-decoration: none;
+    color: #edf0f1;
+  }
+}
