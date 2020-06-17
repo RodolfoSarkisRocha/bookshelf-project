@@ -1,0 +1,44 @@
+@import "../../helpers/variables.scss";
+
+.btn-style {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 5px;
+  outline: none;
+  font-weight: 400;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.12);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.045);
+  padding: 5px;
+  background-color: $primary-color;
+  -webkit-box-shadow: 0 2px 0 rgba(0, 0, 0, 0.045);
+  -moz-box-shadow: 0 2px 0 rgba(0, 0, 0, 0.045);
+  text-align: center;
+  cursor: pointer;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  padding: 0 15px;
+  font-size: 14px;
+  border-radius: 4px;
+  height: 32px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+  position: relative;
+  color: #f1f1f1;
+  background-color: $primary-color;
+  &:active {
+    animation: shadow-pulse 1s -0.2s;
+  }
+}
+
+@keyframes shadow-pulse {
+  0% {
+    box-shadow: 0 0 0 0px rgba(0, 0, 0, 0.2);
+  }
+  100% {
+    box-shadow: 0 0 0 15px rgba(0, 0, 0, 0);
+  }
+}
