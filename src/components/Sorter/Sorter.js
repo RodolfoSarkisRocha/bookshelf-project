@@ -14,9 +14,9 @@ export default props => {
   const handleSorter = (dataIndex) => {
 
     const sortValues = new Map([
-      [null, 'ASC'],
-      ['ASC', 'DESC'],
-      ['DESC', null]
+      [null, 'asc'],
+      ['asc', 'desc'],
+      ['desc', null]
     ]);
 
     // Changes the sorter direction depending on the previous value
@@ -48,12 +48,12 @@ export default props => {
           <div className='flex-row-center'>
             <div style={{ margin: '-5px 5px 0px 0px' }} className='flex-column-center'>
               <FontAwesomeIcon
-                className={iconFlag[0] === filter.dataIndex && iconFlag[1] === 'ASC' ? 'active-sorter-icon' : 'inactive-sorter-icon'}
+                className={iconFlag[0] === filter.dataIndex && iconFlag[1] === 'asc' ? 'active-sorter-icon' : 'inactive-sorter-icon'}
                 style={{ marginBottom: '5px' }}
                 icon={['fas', 'arrow-up']}
               />
               <FontAwesomeIcon
-                className={iconFlag[0] === filter.dataIndex && iconFlag[1] === 'DESC' ? 'active-sorter-icon' : 'inactive-sorter-icon'}
+                className={iconFlag[0] === filter.dataIndex && iconFlag[1] === 'desc' ? 'active-sorter-icon' : 'inactive-sorter-icon'}
                 icon={['fas', 'arrow-down']}
               />
             </div>
