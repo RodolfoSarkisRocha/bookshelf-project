@@ -1,0 +1,48 @@
+@import "../../helpers/variables.scss";
+
+.header-container {
+  width: 100%;
+  color: #f1f1f1;
+  background-color: $primary-color;
+  padding: 10px;
+  height: 45px;
+  z-index: 9999;
+  overflow: hidden;
+  div {
+    font-size: 18px;
+  }
+}
+
+.title-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.filter-container {
+  position: fixed;
+  width: 100%;
+  left: 0;  
+  overflow: hidden;
+  box-sizing: border-box;
+  max-height: 0px;
+  transition: max-height 0.5s ease;
+  background-color: $primary-color;
+}
+
+.filter-container-visible {
+  visibility: visible;
+  transition: max-height 0.5s ease;
+  max-height: 999px;
+}
+
+@media screen and (max-width: 768px) {
+  .header-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    margin: 0;
+  }
+  .filter-container {
+    margin-top: -10px;
+  }
+}
