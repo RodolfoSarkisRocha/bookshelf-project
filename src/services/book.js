@@ -4,7 +4,6 @@ import 'firebase/storage';
 const booksDb = firebase.firestore().collection('books');
 
 export async function fetchBooks({ sorterDirection, dataIndex }) {
-  debugger
   try {
     let booksSnapshot
     if (sorterDirection) booksSnapshot = await booksDb.orderBy(dataIndex, sorterDirection).get();
