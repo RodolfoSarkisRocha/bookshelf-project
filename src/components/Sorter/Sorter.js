@@ -2,17 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import './Sorter.scss'
 
-export default props => {
-
-  const { onSort, filters } = props;
+export default ({ onSort, sorters = [] }) => {
 
   const [sorterDirection, setSorterDirection] = useState(null);
   const [dataIndex, setDataIndex] = useState(null);
   const [isInitialRender, setInitialRender] = useState(true);
-  const [iconFlag, setSorterIconFlag] = useState([null, null]);
+  const [iconFlag, setIconFlag] = useState([null, null]);
 
   const handleSorter = (dataIndex) => {
-
     const sortValues = new Map([
       [null, 'asc'],
       ['asc', 'desc'],
@@ -36,10 +33,12 @@ export default props => {
     };
 
     // Sets the arrow icons flag to change the one correspondent to the data index and direction
-    setSorterIconFlag([dataIndex, sorterDirection]);
+    setIconFlag([dataIndex, sorterDirection]);
 
+    // Calls the onSort function from parent component
     onSort(payload);
-  }, [sorterDirection])
+
+  }, [sorterDirection]);
 
   return (
     <div className='sorter-container'>
@@ -47,27 +46,27 @@ export default props => {
         Sort by:
       </div>
       <div className='sorter-content'>
-        {/* Renders sorter items based on the array of filters passed as props to the component */}
-        {filters.map((filter, filterIndex) => (
-          <div key={filterIndex} onClick={() => handleSorter(filter.dataIndex)} className='sorter-item'>
+        {/* Renders sorter items based on the array of sorters = [] passed as props to the component */}
+        {sorters.map((sorter, sorterIndex) => (
+          <div key={sorterIndex} onClick={() => handleSorter(sorter.dataIndex)} className='sorter-item'>
             <div className='flex-row-center'>
               <div style={{ margin: '-5px 5px 0px 0px' }} className='flex-column-center'>
                 <FontAwesomeIcon
-                  className={iconFlag[0] === filter.dataIndex && iconFlag[1] === 'ASC' ? 'active-sorter-icon' : 'inactive-sorter-icon'}
+                  className={iconFlag[0] === sorter.dataIndex && iconFlag[1] === 'asc' ? 'active-sorter-icon' : 'inactive-sorter-icon'}
                   style={{ marginBottom: '5px' }}
                   icon={['fas', 'arrow-up']}
                 />
                 <FontAwesomeIcon
-                  className={iconFlag[0] === filter.dataIndex && iconFlag[1] === 'DESC' ? 'active-sorter-icon' : 'inactive-sorter-icon'}
+                  className={iconFlag[0] === sorter.dataIndex && iconFlag[1] === 'desc' ? 'active-sorter-icon' : 'inactive-sorter-icon'}
                   icon={['fas', 'arrow-down']}
                 />
               </div>
               <div className='label-container'>
                 <div>
-                  {filter.icon}
+                  {sorter.icon}
                 </div>
                 <div className='sorter-icon-label'>
-                  {filter.name}
+                  {sorter.name}
                 </div>
               </div>
             </div>
