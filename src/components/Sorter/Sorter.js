@@ -42,32 +42,38 @@ export default props => {
   }, [sorterDirection])
 
   return (
-    <div className='filter-content'>
-      {filters.map((filter, filterIndex) => (
-        <div key={filterIndex} onClick={() => handleSorter(filter.dataIndex)} className='filter-item'>
-          <div className='flex-row-center'>
-            <div style={{ margin: '-5px 5px 0px 0px' }} className='flex-column-center'>
-              <FontAwesomeIcon
-                className={iconFlag[0] === filter.dataIndex && iconFlag[1] === 'asc' ? 'active-sorter-icon' : 'inactive-sorter-icon'}
-                style={{ marginBottom: '5px' }}
-                icon={['fas', 'arrow-up']}
-              />
-              <FontAwesomeIcon
-                className={iconFlag[0] === filter.dataIndex && iconFlag[1] === 'desc' ? 'active-sorter-icon' : 'inactive-sorter-icon'}
-                icon={['fas', 'arrow-down']}
-              />
-            </div>
-            <div className='label-container'>
-              <div>
-                {filter.icon}
+    <div className='sorter-container'>
+      <div className='sorter-title'>
+        Sort by:
+      </div>
+      <div className='sorter-content'>
+        {/* Renders sorter items based on the array of filters passed as props to the component */}
+        {filters.map((filter, filterIndex) => (
+          <div key={filterIndex} onClick={() => handleSorter(filter.dataIndex)} className='sorter-item'>
+            <div className='flex-row-center'>
+              <div style={{ margin: '-5px 5px 0px 0px' }} className='flex-column-center'>
+                <FontAwesomeIcon
+                  className={iconFlag[0] === filter.dataIndex && iconFlag[1] === 'ASC' ? 'active-sorter-icon' : 'inactive-sorter-icon'}
+                  style={{ marginBottom: '5px' }}
+                  icon={['fas', 'arrow-up']}
+                />
+                <FontAwesomeIcon
+                  className={iconFlag[0] === filter.dataIndex && iconFlag[1] === 'DESC' ? 'active-sorter-icon' : 'inactive-sorter-icon'}
+                  icon={['fas', 'arrow-down']}
+                />
               </div>
-              <div>
-                {filter.name}
+              <div className='label-container'>
+                <div>
+                  {filter.icon}
+                </div>
+                <div className='sorter-icon-label'>
+                  {filter.name}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   )
 }
