@@ -1,42 +1,41 @@
-// Imports statements
-import React, { useState } from 'react';
+// React
+import React from 'react';
+
+// Styles
 import './TopNav.scss';
+
+// Components
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link } from "react-router-dom";
 
 export default props => {
 
-	const [showMobileLinks, setMenuIcon] = useState(false);
-
-	const menuIconClass = new Map([
-		[true, 'vertical-bars'],
-		[false, 'horizontal-bars']
-	]);
-
-	const handleLinksView = () => {
-		// Changing the links display depending on the display size
-		const linksContainer = document.getElementById('nav-links');
-		if (linksContainer.className === 'links-container') linksContainer.className += ' responsive-links';
-		else linksContainer.className = 'links-container';
-
-		setMenuIcon(!showMobileLinks)
-	}
+	const mobileDisplay = window.innerWidth < 768;
 
 	return (
-		<nav>
-			<div id='nav-links' className='links-container'>
-				<Link className='link-style' to='/'>Home</Link>
-				<Link className='link-style' to='/category'>Category</Link>
-				<Link className='last-link-style' to='/book'>Book</Link>
-			</div>
-			<div className='menu-icon'>
-				<Link onClick={handleLinksView}>
-					<FontAwesomeIcon
-						icon={['fas', 'bars']}
-						className={menuIconClass.get(showMobileLinks)}
-					/>
-				</Link>
-			</div>
-		</nav>
+		<>
+			{
+				!mobileDisplay &&
+				<nav className='desktop-nav'>
+					<div id='nav-links' className='links-container'>
+						<Link className='link-style' to='/'>Home</Link>
+						<Link className='link-style' to='/category'>Category</Link>
+					</div>
+				</nav>
+			}
+			{
+				mobileDisplay &&
+				<nav className='mobile-nav'>
+					<Link className='bottom-nav-item' to='/'>
+						<FontAwesomeIcon className='bottom-nav-icon' icon={['fas', 'home']} />
+						<div>Home</div>
+					</Link>
+					<Link className='bottom-nav-item' to='/'>
+						<FontAwesomeIcon className='bottom-nav-icon' icon={['fas', 'list-ul']} />
+						<div>Category</div>
+					</Link>
+				</nav>
+			}
+		</>
 	);
 };

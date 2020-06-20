@@ -1,15 +1,17 @@
 import { library } from '@fortawesome/fontawesome-svg-core';
 
-import { faBars, faCalendar, faSearch, faArrowUp, faArrowDown, faBook, faSortAlphaUp, faUser, faPlus } from '@fortawesome/free-solid-svg-icons'
+import { faCalendar, faSearch, faArrowUp, faArrowDown, faBook, faSortAlphaUp, faUser, faPlus, faHome, faListUl, faFilter } from '@fortawesome/free-solid-svg-icons'
 
 library.add(
-  faBars,
   faCalendar,
   faSearch,
+  faFilter,
   faArrowUp,
   faArrowDown,
   faBook,
+  faHome,
   faSortAlphaUp,
   faUser,
-  faPlus
+  faPlus,
+  faListUl
 )

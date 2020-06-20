@@ -1,34 +1,37 @@
 @import "../../helpers/variables.scss";
 
-nav {
+.desktop-nav {
   background-color: $primary-color;
   position: fixed;
   top: 0;
-  min-height: 40px;
+  height: 40px;
   width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
   list-style: none;
   z-index: 1;
-
-  .links-container {
-    padding: 10px;
-  }
 }
 
-.link-style {
-  margin: 0 10px 0 0;
-}
-
-.menu-icon {
-  display: none;
+.mobile-nav {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  height: 45px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  color: #f1f1f1;
+  background-color: $primary-color;
+  border-top: 1px solid rgba(143, 138, 138, 0.25);
 }
 
 nav a {
   color: #edf0f1;
   text-decoration: none;
-  font-size: 17px;
+  margin: 10px;
+  font-size: 18px;
 
   &:hover {
     transition: all 0.3s ease 0s;
@@ -40,52 +43,15 @@ nav a {
   }
 }
 
-.vertical-bars {
-  transition: transform 0.2s ease-in-out;
-  -webkit-transition: -webkit-transform 0.2s ease-in-out;
-  -webkit-transform: rotate(-90deg);
-  transform: rotate(-90deg);
+.mobile-nav a svg {
+  font-size: 20px;
+  margin-bottom: 2px;
 }
 
-.horizontal-bars {
-  transition: transform 0.2s ease-in-out;
-  -webkit-transition: -webkit-transform 0.2s ease-in-out;
-  -webkit-transform: rotate(-180deg);
-  transform: rotate(-180deg);
-}
-
-.expand-menu {
-  max-height: 500px;
-}
-
-@media screen and (max-width: $tablet-breakpoint) {
-  .links-container :not(:first-child) {
-    display: none;
-  }
-  .link-style {
-    margin: 0 0 10px 0;
-  }
-  .menu-icon {
-    display: block;
-    position: absolute;
-    padding: 10px;
-    top: 0;
-    right: 0;
-  }
-}
-
-.responsive-links {
+.bottom-nav-item {
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  position: relative;
-  :not(:first-child):not(:last-child) {
-    display: block;
-  }
-  :last-child {
-    display: block;
-  }
-  :first-child {
-    display: block;
-  }
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
 }
