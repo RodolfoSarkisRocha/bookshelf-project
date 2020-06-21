@@ -1,113 +1,128 @@
-import React, { Fragment, useState } from 'react';
-import './Home.scss'
-import bookCover from '../../assets/book-cover.jpg';
+// React
+import React, { Fragment, useState, useEffect } from 'react';
+
+// Styles
+import './Home.scss';
+
+// Components
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Sorter from '../../components/Sorter/Sorter';
+import { exists } from '../../utils/booleanUtils';
+import Header from '../../components/Header/Header';
 import Button from '../../components/Button/Button';
 
-const mockBooks = [];
+// Redux
+import { useDispatch, useSelector } from 'react-redux';
+import { postBook } from '../../services/book';
+import { getBooks, getCategories } from '../../reducers/book'
+import Empty from '../../components/Empty/Empty';
 
-const mockCategories = {
-  reading: 'Currently Reading',
-  wantToRead: 'Want to Read',
-  read: 'Read'
-};
+function Home() {
 
-for (let i = 0; i < 10; i++) {
-  mockBooks.push({
-    id: i + 1,
-    time: Date.now(),
-    title: `Book ${i + 1}`,
-    description: `Lorem ipsum dolor sit amet ${i + 1}`,
-    author: `Author ${i + 1}`,
-    category: mockCategories.reading,
-    deleted: 'false'
-  });
-};
+  // Reducer 
+  const dispatch = useDispatch();
+  const bookList = useSelector(state => state.bookList);
+  const categoriesList = useSelector(state => state.categoriesList);
+  // const getBooksLoading = useSelector(state => state.getBookLoading);
 
-export default props => {
+  // TODO FORM SUBMIT
+  // async function handleFileChange(event) {
+  //   const a = { file: event.target.files[0] }
+  //   try {
+  //     await postBook(a).then(response =>
+  //       console.log(response)
+  //     )
+  //   }
+  //   catch (err) {
+  //     console.log(err)
+  //   }
+  // };
 
-  const [expandedFilters, setExpandedFilters] = useState(false);
+  useEffect(() => {
+    retrieveBooks()
+  }, [])
 
-  function handleExpandFilters() {
-    const filterHeader = document.getElementById('filterHeader');
-    if (filterHeader.className === 'filter-header') filterHeader.className += ' expanded-filters';
-    else filterHeader.className = 'filter-header';
-    setExpandedFilters(!expandedFilters);
+  /**
+  * Retrieve books
+  * @param {object} orderByParams params that are passed as payload to retrieve books function
+  */
+  async function retrieveBooks(orderByParams) {
+    dispatch(getCategories());
+    const payload = {};
+    if (exists(orderByParams)) {
+      payload.sorterDirection = orderByParams.sorterDirection;
+      payload.dataIndex = orderByParams.dataIndex;
+    };
+    dispatch(getBooks(payload));
   };
 
-  const headerWithFilter = () => {
+  function renderEmptyData(category) {
+    const existsData = bookList.some(currentBook => currentBook.category === category.value);
+    if (!existsData) return <Empty text='No books in this category'/>;
+    return null
+  }
 
-    function handleSortDirectionChange({ sorterDirection, dataIndex }) {
-      console.log(`${sorterDirection} ${dataIndex}`)
-    }
-
-    const filters = [
-      {
-        name: 'Creation Date',
-        dataIndex: 'date',
-        icon: <FontAwesomeIcon icon={['fas', 'calendar']} />
-      },
-      {
-        name: 'Book',
-        dataIndex: 'book',
-        icon: <FontAwesomeIcon icon={['fas', 'book']} />
-      },
-      {
-        name: 'Author',
-        dataIndex: 'author',
-        icon: <FontAwesomeIcon icon={['fas', 'user']} />
-      },
-    ];
-
-    return (
-      <div id='filterHeader' className='filter-header'>
-        <div className='title-content'>
-          <div>Books</div>
-          <div className={'flex-row-end'}>
-            <div className='flex-row-center'>
-              {/* <Button className='mr10' onClick={() => setOpenBookDetails(true)}>
-                <FontAwesomeIcon className='mr10' icon={['fas', 'plus']} />
-                <div>Add a new book</div>
-              </Button> */}
-              <Button onClick={handleExpandFilters}>
-                <FontAwesomeIcon
-                  className={expandedFilters ? 'arrow-down' : 'arrow-up'}
-                  icon={['fas', 'arrow-down']}
-                />
-                <div>Sort by</div>
-              </Button>
-            </div>
-          </div>
-        </div>
-        {<Sorter
-          filters={filters}
-          onSort={handleSortDirectionChange}
-        />}
-      </div>
-    )
-  };
+  const sorters = [
+    {
+      name: 'Creation Date',
+      dataIndex: 'creationDate',
+      icon: <FontAwesomeIcon icon={['fas', 'calendar']} />
+    },
+    {
+      name: 'Title',
+      dataIndex: 'title',
+      icon: <FontAwesomeIcon icon={['fas', 'book']} />
+    },
+    {
+      name: 'Author',
+      dataIndex: 'author',
+      icon: <FontAwesomeIcon icon={['fas', 'user']} />
+    },
+  ];
 
   return (
     <Fragment>
-      {headerWithFilter()}
-      <div className='category-header'>
-        <div>
-          No category
-        </div>
-        <Link>
-          View All
-        </Link>
-      </div>
-      <div className='category-section'>
-        {mockBooks.map(book => (
-          <div key={book.id} className='book-item'>
-            <img alt='book cover' src={bookCover} style={{ width: 200, height: 300 }} />
-            <div className='book-title'>{book.title}</div>
+      <Header
+        title='Books'
+        extra={(<FontAwesomeIcon icon={['fas', 'filter']} />)}
+      >
+        {<Sorter
+          sorters={sorters}
+          onSort={retrieveBooks}
+        />}
+      </Header>
+      <div className='main-content'>
+        {/* Sorting the books by categories retrived from the database */}
+        {categoriesList.map(currentCategory => (
+          <div className='category-container'>
+            <div className='category-header'>
+              <div>
+                {currentCategory?.label}
+              </div>
+              <Button loading={false} loadingCss={{ color: '#f1f1f1', size: 16 }}>
+                View All
+              </Button>
+            </div>
+            <div className='category-section'>
+              {bookList.map(book => {
+                if (book.category === currentCategory?.value)
+                  return (
+                    <div key={book.id} className='book-item'>
+                      <img className='book-cover' alt='book cover' src={book.cover} />
+                      <div className='book-title'>{book.title}</div>
+                    </div>
+                  )
+                return null
+              })}
+              {renderEmptyData(currentCategory)}
+            </div>
           </div>
-        ))}
+        )
+        )}
       </div>
     </Fragment>
   );
 };
+
+export default Home
