@@ -29,9 +29,10 @@
   position: relative;
   color: #f1f1f1;
   background-color: $primary-color;
-  &:active {
-    animation: shadow-pulse 1s -0.2s;
-  }
+}
+
+.pulse {
+  animation: shadow-pulse 1s;
 }
 
 @keyframes shadow-pulse {
@@ -41,4 +42,13 @@
   100% {
     box-shadow: 0 0 0 15px rgba(0, 0, 0, 0);
   }
+}
+
+.btn-prefix {
+  margin-right: 10px;
+}
+
+.btn-children {
+  font-size: 14px;
+  font-weight: bold;
 }
