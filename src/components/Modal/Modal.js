@@ -1,18 +1,19 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState, useRef } from 'react';
 import './Modal.scss';
 
-export default props => {
+export default ({ title, footer, visible, width, onCancel, children }) => {
 
-  const { title, footer, visible, width, onCancel } = props;
-  const modalBody = props.children;
+  const modalBody = children;
   const [modalClass, setModalClass] = useState('modal-overlay');
+  const modalRef = useRef(null);
 
-  // Function to close modal when user clicks outside of it
+  // Function to close modal when user clicks outside of it, onCancel prop is necessary to close the modal.
   function overlayClick(e) {
-    const modalOverlay = document.getElementById('modal-wrapper');
-    if (e.target === modalOverlay) {
+    const modalOverlay = modalRef;
+    if (e.target === modalOverlay.current) {
+      if (onCancel && typeof onCancel === 'function') onCancel()
+      else return null
       setModalClass('modal-overlay');
-      onCancel()
     };
   };
 
@@ -23,11 +24,11 @@ export default props => {
 
   return (
     <Fragment>
-      <div id='modal-wrapper' className={modalClass} onClick={overlayClick}>
+      <div ref={modalRef} className={modalClass} onClick={overlayClick}>
         <div className='modal' style={{ width }}>
-          <div className='modal-header'>{title}</div>
+          {title && <div className='modal-header'>{title}</div>}
           <div className='modal-body'>{modalBody}</div>
-          <div className='modal-footer'>{footer}</div>
+          {footer && <div className='modal-footer'>{footer}</div>}
         </div>
       </div>
     </Fragment>
