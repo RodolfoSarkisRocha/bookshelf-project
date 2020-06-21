@@ -17,6 +17,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { postBook } from '../../services/book';
 import { getBooks, getCategories } from '../../reducers/book'
 import Empty from '../../components/Empty/Empty';
+import Spin from '../../components/Spin/Spin';
 
 function Home() {
 
@@ -24,7 +25,7 @@ function Home() {
   const dispatch = useDispatch();
   const bookList = useSelector(state => state.bookList);
   const categoriesList = useSelector(state => state.categoriesList);
-  // const getBooksLoading = useSelector(state => state.getBookLoading);
+  const getBooksLoading = useSelector(state => state.getBookLoading);
 
   // TODO FORM SUBMIT
   // async function handleFileChange(event) {
@@ -59,7 +60,7 @@ function Home() {
 
   function renderEmptyData(category) {
     const existsData = bookList.some(currentBook => currentBook.category === category.value);
-    if (!existsData) return <Empty text='No books in this category'/>;
+    if (!existsData) return <Empty text='No books in this category' />;
     return null
   }
 
@@ -105,17 +106,22 @@ function Home() {
               </Button>
             </div>
             <div className='category-section'>
-              {bookList.map(book => {
-                if (book.category === currentCategory?.value)
-                  return (
-                    <div key={book.id} className='book-item'>
-                      <img className='book-cover' alt='book cover' src={book.cover} />
-                      <div className='book-title'>{book.title}</div>
-                    </div>
-                  )
-                return null
-              })}
-              {renderEmptyData(currentCategory)}
+              {
+                getBooksLoading ? <Spin /> :
+                  <>
+                    {bookList.map(book => {
+                      if (book.category === currentCategory?.value)
+                        return (
+                          <div key={book.id} className='book-item'>
+                            <img className='book-cover' alt='book cover' src={book.cover} />
+                            <div className='book-title'>{book.title}</div>
+                          </div>
+                        )
+                      return null
+                    })}
+                    {renderEmptyData(currentCategory)}
+                  </>
+              }
             </div>
           </div>
         )
