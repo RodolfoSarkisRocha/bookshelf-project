@@ -1,0 +1,13 @@
+.spinner-container {
+  height: 100%;
+  overflow: hidden;
+  width: 100%;
+  background-color: rgba($color: #aca5a5, $alpha: 0.1);
+  padding: 10px;;
+}
+
+.spinner {
+  position: relative;
+ left: 50%;
+ top: 50%; 
+}
