@@ -2,6 +2,7 @@ import firebase from '../config/firebaseConfig';
 import 'firebase/storage';
 
 const booksDb = firebase.firestore().collection('books');
+const categoriesDb = firebase.firestore().collection('categories');
 
 export async function fetchBooks({ sorterDirection, dataIndex }) {
   try {
@@ -14,6 +15,20 @@ export async function fetchBooks({ sorterDirection, dataIndex }) {
       return book;
     });
     return books;
+  }
+  catch (err) {
+    throw err;
+  };
+};
+
+export async function fetchCategories() {
+  try {
+    const categoriesSnapshot = await categoriesDb.get();
+    const categories = categoriesSnapshot.docs.map(doc => {
+      const categoriesMapped = doc.data();
+      return categoriesMapped;
+    });
+    return categories[0];
   }
   catch (err) {
     throw err;

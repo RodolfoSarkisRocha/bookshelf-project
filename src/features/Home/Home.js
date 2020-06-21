@@ -9,43 +9,35 @@ import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Sorter from '../../components/Sorter/Sorter';
 import { exists } from '../../utils/booleanUtils';
-import ClipLoader from "react-spinners/ClipLoader";
 import Header from '../../components/Header/Header';
+import Button from '../../components/Button/Button';
 
 // Redux
 import { useDispatch, useSelector } from 'react-redux';
 import { postBook } from '../../services/book';
-import { getBooks } from '../../reducers/book'
-
-
-const mockCategories = new Map([
-  ['reading', 'Currently Reading'],
-  ['wantToRead', 'Want to Read'],
-  ['read', 'Read'],
-]);
+import { getBooks, getCategories } from '../../reducers/book'
+import Empty from '../../components/Empty/Empty';
 
 function Home() {
 
   // Reducer 
   const dispatch = useDispatch();
   const bookList = useSelector(state => state.bookList);
-  const getBooksLoading = useSelector(state => state.getBookLoading);
-
-  // State
-  const [expandedFilters, setExpandedFilters] = useState(false);
+  const categoriesList = useSelector(state => state.categoriesList);
+  // const getBooksLoading = useSelector(state => state.getBookLoading);
 
   // TODO FORM SUBMIT
-  async function handleFileChange(event) {
-    const a = { file: event.target.files[0] }
-    try {
-      await postBook(a).then(response =>
-        console.log(response)
-      )
-    }
-    catch (err) {
-      console.log(err)
-    }
-  };
+  // async function handleFileChange(event) {
+  //   const a = { file: event.target.files[0] }
+  //   try {
+  //     await postBook(a).then(response =>
+  //       console.log(response)
+  //     )
+  //   }
+  //   catch (err) {
+  //     console.log(err)
+  //   }
+  // };
 
   useEffect(() => {
     retrieveBooks()
@@ -55,7 +47,8 @@ function Home() {
   * Retrieve books
   * @param {object} orderByParams params that are passed as payload to retrieve books function
   */
-  function retrieveBooks(orderByParams) {
+  async function retrieveBooks(orderByParams) {
+    dispatch(getCategories());
     const payload = {};
     if (exists(orderByParams)) {
       payload.sorterDirection = orderByParams.sorterDirection;
@@ -63,6 +56,12 @@ function Home() {
     };
     dispatch(getBooks(payload));
   };
+
+  function renderEmptyData(category) {
+    const existsData = bookList.some(currentBook => currentBook.category === category.value);
+    if (!existsData) return <Empty text='No books in this category'/>;
+    return null
+  }
 
   const sorters = [
     {
@@ -93,26 +92,31 @@ function Home() {
           onSort={retrieveBooks}
         />}
       </Header>
-      <div className='category-header'>
-        <div>
-          No category
-        </div>
-        <Link>
-          View All
-        </Link>
-      </div>
-      {/* TODO LOADING */}
-      <div style={{ textAlign: 'center' }}>
-        <ClipLoader
-          loading={getBooksLoading}
-          size={300}
-        />
-      </div>
-      <div className='category-section'>
-        {bookList.map(book => (
-          <div key={book.id} className='book-item'>
-            <img alt='book cover' src={book.cover} style={{ width: 200, height: 300 }} />
-            <div className='book-title'>{book.title}</div>
+      <div className='main-content'>
+        {/* Sorting the books by categories retrived from the database */}
+        {categoriesList.map(currentCategory => (
+          <div className='category-container'>
+            <div className='category-header'>
+              <div>
+                {currentCategory?.label}
+              </div>
+              <Button loading={false} loadingCss={{ color: '#f1f1f1', size: 16 }}>
+                View All
+              </Button>
+            </div>
+            <div className='category-section'>
+              {bookList.map(book => {
+                if (book.category === currentCategory?.value)
+                  return (
+                    <div key={book.id} className='book-item'>
+                      <img className='book-cover' alt='book cover' src={book.cover} />
+                      <div className='book-title'>{book.title}</div>
+                    </div>
+                  )
+                return null
+              })}
+              {renderEmptyData(currentCategory)}
+            </div>
           </div>
         )
         )}
