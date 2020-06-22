@@ -10,21 +10,30 @@
   justify-content: space-between;
   align-items: center;
   list-style: none;
-  z-index: 1;
+  font-weight: bold;
+  z-index: 999;
+  -webkit-box-shadow: 0px 2px 3px 0px rgba(0, 0, 0, 1);
+  -moz-box-shadow: 0px 2px 3px 0px rgba(0, 0, 0, 1);
+  box-shadow: 0px 2px 3px 0px rgba(0, 0, 0, 1);
 }
 
 .mobile-nav {
   position: fixed;
   bottom: 0;
   right: 0;
+  font-weight: bold;
   width: 100%;
   height: 45px;
   display: flex;
+  z-index: 999;
   flex-direction: row;
   justify-content: space-evenly;
   color: #f1f1f1;
   background-color: $primary-color;
   border-top: 1px solid rgba(143, 138, 138, 0.25);
+  -webkit-box-shadow: 0px -2px 3px 0px rgba(0, 0, 0, 1);
+  -moz-box-shadow: 0px -2px 3px 0px rgba(0, 0, 0, 1);
+  box-shadow: 0px -2px 3px 0px rgba(0, 0, 0, 1);
 }
 
 nav a {
@@ -35,11 +44,11 @@ nav a {
 
   &:hover {
     transition: all 0.3s ease 0s;
-    color: #0088a9;
+    color: #007ea7;
   }
 
   &:active {
-    color: #0088a9;
+    color: #007ea7;
   }
 }
 
