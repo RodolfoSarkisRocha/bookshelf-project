@@ -1,0 +1,59 @@
+.textarea-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  margin-bottom: 5px;
+}
+.textarea-style {
+  border: 1px solid #f1f1f1;
+  border-radius: 3px;
+  padding: 5px;
+  max-height: 500px;
+}
+
+textarea {
+  ::placeholder {
+    color: #f1f1f1;
+    font-size: 18px;
+  }
+}
+
+.error {
+  border: 1px solid #ef5350;
+}
+
+.shake {
+  animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+
+  @keyframes shake {
+    10%,
+    90% {
+      transform: translate3d(-1px, 0, 0);
+    }
+
+    20%,
+    80% {
+      transform: translate3d(2px, 0, 0);
+    }
+
+    30%,
+    50%,
+    70% {
+      transform: translate3d(-2px, 0, 0);
+    }
+
+    40%,
+    60% {
+      transform: translate3d(2px, 0, 0);
+    }
+  }
+}
+
+.error-message {
+  color: #ef5350;
+  font-size: 10px;
+  margin: 2px 0 0 4px;
+}
