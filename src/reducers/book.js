@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { fetchBooks, fetchCategories } from '../services/book';
+import { fetchBooks, fetchCategories, postImage, createBook } from '../services/book';
 import { toast } from 'react-toastify';
 
 export const bookSlice = createSlice({
@@ -8,7 +8,8 @@ export const bookSlice = createSlice({
     bookList: [],
     getBookLoading: false,
     error: false,
-    categoriesList: []
+    categoriesList: [],
+    createBookLoading: false
   },
   reducers: {
     getBookSuccess: (state, action) => ({ ...state, bookList: action.payload }),
@@ -33,8 +34,27 @@ export const getCategories = () => async dispatch => {
     dispatch(getCategoriesSuccess(categories.categoriesList))
   }
   catch (err) {
-    toast.error('Impossible to retrieve book categories, try again later')
+    toast.error('Impossible to retrieve book categories, try again later!')
   }
+}
+
+export const postBook = (payload, callback) => async dispatch => {
+  dispatch(setLoading({ loadingTarget: 'createBookLoading', loadingType: true }))
+  try {
+    const bookBody = JSON.parse(JSON.stringify(payload.bookBodyMapped));
+    const bookCover = payload.bookCover;
+    if (bookCover) {
+      const imageDownloadUrl = await postImage(bookCover);
+      bookBody.cover = imageDownloadUrl;
+    }
+    await createBook(bookBody);
+    toast.success('Book created successfully!');
+    if (callback) callback()
+  }
+  catch (err) {
+    toast.error('There was an error creating the book, try again later!')
+  }
+  finally { dispatch(setLoading({ loadingTarget: 'createBookLoading', loadingType: false })) }
 }
 
 export default bookSlice.reducer;

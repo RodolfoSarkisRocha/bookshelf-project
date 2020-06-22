@@ -35,7 +35,7 @@ export async function fetchCategories() {
   };
 };
 
-export async function postBook({ file, body }) {
+export async function postImage(file) {
   try {
     const storageRef = firebase.storage().ref();
     const fileRef = storageRef.child(file.name);
@@ -43,4 +43,14 @@ export async function postBook({ file, body }) {
     return await fileRef.getDownloadURL();
   }
   catch (err) { throw err };
+};
+
+export async function createBook(payload) {
+  try {
+    const response = await booksDb.add(payload);
+    return response;
+  }
+  catch (err) {
+    throw err;
+  };
 };

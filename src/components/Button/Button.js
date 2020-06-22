@@ -1,11 +1,16 @@
 import React, { useRef } from 'react';
 import './Button.scss';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ClipLoader } from 'react-spinners';
 
-export default props => {
-
-  const { children, onClick, loading, loadingCss, className } = props;
+export default ({
+  children,
+  onClick,
+  loading,
+  loadingCss,
+  className,
+  type,
+  icon,
+  form }) => {
 
   const buttonRef = useRef(null);
 
@@ -19,25 +24,31 @@ export default props => {
     if (onClick && typeof onClick === 'function') onClick()
   }
 
+  const defaultClassName = loading ? 'btn-style btn-loading' : 'btn-style';
+
   return (
     <button
       ref={buttonRef}
+      type={type}
       onClick={handleClick}
-      className={className ? `${className} btn-style` : 'btn-style'}
+      form={form}
+      className={className ? `${className} ${defaultClassName}` : defaultClassName}
     >
-      <div className='btn-prefix'>
-        {loading ?
-          <ClipLoader
-            loading={true}
-            color={loadingCss.color}
-            size={loadingCss.size}
-          /> :
-          <FontAwesomeIcon icon={['fas', 'eye']} />
-        }
-      </div>
+      {(icon || loading) &&
+        <div className='btn-prefix'>
+          {loading ?
+            <ClipLoader
+              loading={true}
+              color={loadingCss.color}
+              size={loadingCss.size}
+            /> :
+            icon ? icon : null
+          }
+        </div>
+      }
       <div className='btn-children'>
         {children}
       </div>
-    </button>
+    </button >
   )
 }
