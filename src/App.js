@@ -1,19 +1,27 @@
+// Imports
 import React from 'react';
-import TopNav from './components/TopNav/TopNav';
+
+// Styles
 import './App.scss';
-import { BrowserRouter as Router, Redirect, Route } from 'react-router-dom';
+import 'react-toastify/dist/ReactToastify.css';
+
+//Components
 import Home from './features/Home/Home';
 import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import TopNav from './components/TopNav/TopNav';
 import GoToTopBtn from './components/GoToTopBtn/GoToTopBtn';
+import { BrowserRouter as Router, Redirect, Route, Switch } from 'react-router-dom';
 
 function App() {
   return (
     <Router>
       <TopNav />
       <div className='content-container'>
-        <Route path='/' component={Home} />
-        <Redirect from='*' to='/' />
+        <Switch>
+          <Route path='/' exact component={Home} />
+          <Route path='/category' exact component={null} />
+          <Redirect from='*' exact to='/' />
+        </Switch>
       </div>
       <GoToTopBtn />
       <ToastContainer />

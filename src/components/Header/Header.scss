@@ -13,6 +13,19 @@
   }
 }
 
+.extra-content {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.header-title {
+  width: max-content;
+  margin-right: 20px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
 .title-container {
   display: flex;
   justify-content: space-between;

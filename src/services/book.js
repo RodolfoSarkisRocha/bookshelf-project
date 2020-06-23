@@ -9,12 +9,25 @@ export async function fetchBooks({ sorterDirection, dataIndex }) {
     let booksSnapshot
     if (sorterDirection) booksSnapshot = await booksDb.orderBy(dataIndex, sorterDirection).get();
     else booksSnapshot = await booksDb.get();
-    const books = booksSnapshot.docs.map(doc => {
-      const book = doc.data();
-      book.id = doc.id;
-      return book;
-    });
+    const books = booksSnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
     return books;
+  }
+  catch (err) {
+    throw err;
+  };
+};
+
+export async function fetchBookById(id) {
+  try {
+    const response = await booksDb.doc(id).get();
+    const responseMapped = {
+      id: response.id,
+      ...response.data()
+    }
+    return responseMapped
   }
   catch (err) {
     throw err;
