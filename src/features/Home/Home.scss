@@ -143,9 +143,12 @@
 .file-upload-buttons {
   display: flex;
   width: 100%;
-  justify-content: space-around;
+  justify-content: center;
   align-items: center;
   margin: 10px 0;
+  button {
+    margin: 0 10px;
+  }
 }
 
 .remove-cover-icon {
