@@ -49,6 +49,7 @@ export async function fetchCategories() {
 };
 
 export async function postImage(file) {
+  debugger
   try {
     const storageRef = firebase.storage().ref();
     const fileRef = storageRef.child(file.name);
@@ -59,6 +60,7 @@ export async function postImage(file) {
 };
 
 export async function createBook(payload) {
+  debugger
   try {
     const response = await booksDb.add(payload);
     return response;

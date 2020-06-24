@@ -17,15 +17,18 @@ import Input from '../../components/Input/Input';
 import TextArea from '../../components/TextArea/TextArea';
 import Select from '../../components/Select/Select';
 import { format } from 'date-fns';
-
+import imageCompression from 'browser-image-compression';
 
 // Redux
 import { useDispatch, useSelector } from 'react-redux';
-import { getBooks, getCategories, postBook } from '../../reducers/book'
+import { getBooks, getCategories, postBook, getBookById } from '../../reducers/book'
+import Book from '../Book/Book';
+import { toast } from 'react-toastify';
 
 function Home() {
 
   // Initializing Constants
+  const { getDataUrlFromFile } = imageCompression;
   const mobileDisplay = window.innerWidth < 768;
   const defaultBookBody = {
     title: null,
@@ -51,11 +54,16 @@ function Home() {
   const [bookBody, setBookBody] = useState(defaultBookBody);
   const [formError, setFormError] = useState(bookError);
   const [coverPreview, setCoverPreview] = useState(null);
+  const [showBookDetails, setShowBookDetails] = useState(false);
 
   // Use Effect
   useEffect(() => {
     retrieveBooks()
   }, [])
+
+  useEffect(() => {
+
+  }, [showBookDetails])
 
 
   // Reducer 
@@ -63,7 +71,8 @@ function Home() {
   const bookList = useSelector(state => state.bookList);
   const categoriesList = useSelector(state => state.categoriesList);
   const getBooksLoading = useSelector(state => state.getBookLoading);
-  const createBookLoading = useSelector(state => state.createBookLoading)
+  const createBookLoading = useSelector(state => state.createBookLoading);
+  const bookDetails = useSelector(state => state.bookBody);
 
   function validateForm() {
 
@@ -91,6 +100,8 @@ function Home() {
 
   function createBookCallback() {
     setModalVisible(false);
+    setBookBody(defaultBookBody);
+    setCoverPreview(null);
     retrieveBooks();
   }
 
@@ -100,7 +111,11 @@ function Home() {
     const bookCover = bookBody.cover;
     const bookBodyMapped = JSON.parse(JSON.stringify(bookBody));
     bookBodyMapped.creationDate = format(new Date(), 'yyyy-MM-dd');
-    if (!exists(bookBodyMapped.category)) bookBodyMapped.category = 'noCategory'
+    // Changing the stringy category from the select event back to an object
+    bookBodyMapped.category = bookBodyMapped.category ? JSON.parse(bookBodyMapped.category) : null
+    if (!exists(bookBodyMapped.category) || bookBodyMapped.category === 'noCategory') {
+      bookBodyMapped.category = { value: 'noCategory', label: 'No Category' }
+    }
     const payloadMapped = {
       bookCover,
       bookBodyMapped
@@ -136,17 +151,49 @@ function Home() {
     });
   };
 
-  function previewImage(event) {
-    const reader = new FileReader();
-    reader.onload = function () {
-      setCoverPreview(reader.result);
+  /**
+   * This compresses the image to a smaller size
+   * and sets the image onto the state to later upload
+   * @param {*} event The object containing the image meant to be uploaded
+   */
+  async function handleImageChange(event) {
+    const imageFile = event.target.files[0];
+
+    const options = {
+      maxSizeMB: 1,
+      maxWidthOrHeight: 300,
+      useWebWorker: true
+    };
+
+
+    try {
+      const compressedImage = await imageCompression(imageFile, options);
+      // This is needed to set a file into the preview field
+      const previewFile = await getDataUrlFromFile(compressedImage);
+      setCoverPreview(previewFile);
+
+      setBookBody({
+        ...bookBody,
+        cover: compressedImage
+      });
     }
-    reader.readAsDataURL(event.target.files[0]);
-    setBookBody({
-      ...bookBody,
-      cover: event.target.files[0]
-    });
-  };
+    catch (err) {
+      toast.error('There was a problem with your image, try again or send a different image')
+    }
+  }
+
+  function retrieveBookById(id) {
+
+    function showBookDetails() {
+      setShowBookDetails(true);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    if (exists(id)) {
+      dispatch(getBookById(id, showBookDetails))
+    }
+
+  }
 
   /**
   * Retrieve books
@@ -162,8 +209,13 @@ function Home() {
     dispatch(getBooks(payload));
   };
 
+  /**
+   * Checking if any book with current category is present 
+   * renders a empty feedback component otherwise
+   * @param {string} category 
+   */
   function renderEmptyData(category) {
-    const existsData = bookList.some(currentBook => currentBook.category === category.value);
+    const existsData = bookList.some(currentBook => currentBook.category.value === category.value);
     if (!existsData) return <Empty text='No books in this category' />;
     return null
   };
@@ -212,8 +264,9 @@ function Home() {
         </div>
         <input
           className='upload-input'
-          onChange={previewImage}
+          onChange={handleImageChange}
           type='file'
+          accept='image/*'
           files={bookBody.cover}
           name='cover'
           id='cover'
@@ -257,7 +310,7 @@ function Home() {
           errorMessage='Please, inform the category'
         >
           {categoriesList.map(category => (
-            <option selected={category.value === 'noCategory'} value={category.value}>
+            <option selected={category.value === 'noCategory'} value={JSON.stringify(category)}>
               {category.label}
             </option>
           ))}
@@ -301,68 +354,74 @@ function Home() {
 
   return (
     <Fragment>
-      <Header
-        title='Books'
-        extra={(<FontAwesomeIcon icon={['fas', 'filter']} />)}
-      >
-        {<Sorter
-          sorters={sorters}
-          onSort={retrieveBooks}
-        />}
-      </Header>
-      <div className='main-content'>
-        <Button
-          icon={<FontAwesomeIcon icon={['fas', 'plus']} />}
-          className='max-width'
-          onClick={openModal}
-        >
-          Add book
-      </Button>
-        {/* Sorting the books by categories retrived from the database */}
-        {categoriesList.map(currentCategory => (
-          <div className='category-container'>
-            <div className='category-header'>
-              <div>
-                {currentCategory?.label}
-              </div>
-              <Button
-                loading={false}
-                loadingCss={{ color: '#f1f1f1', size: 16 }}
-                icon={<FontAwesomeIcon icon={['fas', 'eye']} />}
-              >
-                View All
+      {showBookDetails ?
+        <Book book={bookDetails} setShowBookDetails={setShowBookDetails} />
+        :
+        <>
+          <Header
+            title='Books'
+            extra={(<FontAwesomeIcon icon={['fas', 'filter']} />)}
+          >
+            {<Sorter
+              sorters={sorters}
+              onSort={retrieveBooks}
+            />}
+          </Header>
+          <div className='main-content'>
+            <Button
+              icon={<FontAwesomeIcon icon={['fas', 'plus']} />}
+              className='max-width'
+              onClick={openModal}
+            >
+              Add book
+            </Button>
+            {/* Sorting the books by categories retrived from the database */}
+            {categoriesList.map(currentCategory => (
+              <div className='category-container'>
+                <div className='category-header'>
+                  <div>
+                    {currentCategory?.label}
+                  </div>
+                  <Button
+                    loading={false}
+                    loadingCss={{ color: '#f1f1f1', size: 16 }}
+                    icon={<FontAwesomeIcon icon={['fas', 'eye']} />}
+                  >
+                    View All
               </Button>
-            </div>
-            <div className='category-section'>
-              {
-                getBooksLoading ? <Spin /> :
-                  <>
-                    {bookList.map(book => {
-                      if (book.category === currentCategory?.value)
-                        return (
-                          <div key={book.id} className='book-item'>
-                            <img className='book-cover' alt='book cover' src={book.cover} />
-                            <div className='book-title'>{book.title}</div>
-                          </div>
-                        )
-                      return null
-                    })}
-                    {renderEmptyData(currentCategory)}
-                  </>
-              }
-            </div>
+                </div>
+                <div className='category-section'>
+                  {
+                    getBooksLoading ? <Spin /> :
+                      <>
+                        {bookList.map(book => {
+                          if (book.category.value === currentCategory?.value)
+                            return (
+                              <div key={book.id} className='book-item'>
+                                <img onClick={() => retrieveBookById(book.id)} className='book-cover' alt='book cover' src={book.cover} />
+                                <div className='book-title'>{book.title}</div>
+                              </div>
+                            )
+                          return null
+                        })}
+                        {renderEmptyData(currentCategory)}
+                      </>
+                  }
+                </div>
+              </div>
+            )
+            )}
           </div>
-        )
-        )}
-      </div>
-      <Modal
-        title='Book'
-        visible={modalVisible}
-        width={mobileDisplay ? '80%' : '60%'}
-        footer={renderModalFooter()}
-      >
-        {renderBookCreation()}
-      </Modal>
+          <Modal
+            title='Book'
+            visible={modalVisible}
+            width={mobileDisplay ? '80%' : '60%'}
+            footer={renderModalFooter()}
+          >
+            {renderBookCreation()}
+          </Modal>
+        </>
+      }
     </Fragment>
   );
 };
