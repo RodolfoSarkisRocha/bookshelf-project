@@ -113,7 +113,10 @@ function Home() {
 
   function mapBookDataToForm() {
     setCoverPreview(bookDetails.cover);
-    setBookBody(bookDetails);
+    setBookBody({
+      ...bookDetails,
+      category: JSON.stringify(bookDetails.category)
+    });
   }
 
   function editBook() {
@@ -153,43 +156,32 @@ function Home() {
   };
 
   function handleUpdateBook() {
-    const callback = submitFormCallback;
+    const callback = submitFormCallback;    
+
     // Copying state array to prevent reference problems
     const bookBodyMapped = JSON.parse(JSON.stringify(bookBody));
-
-    const {
-      category,
-      comments
-    } = bookBodyMapped;
 
     // Getting the not stringyfied cover image 
     const { cover } = bookBody;
 
+    const payloadMapped = {
+      ...bookBodyMapped,
+      cover: cover
+    };
+
     // Checking if cover image is the same as before
     // to prevent unecessary upload
-    let coverImage;
-    let imageToDelete = null;    
-
-    const isTheSameCover = typeof bookDetails.cover === 'string' &&
-      typeof cover === 'string' &&
-      bookDetails.cover === cover &&
-      imgHasChanged;
-
-    if (isTheSameCover) imageToDelete = bookDetails.cover;
-
-    coverImage = cover;
+    // If not, delete the previous image from the storage
+    let imageToDelete = null;
+    const isTheSameCover = typeof payloadMapped.cover === 'string';
+    if (!isTheSameCover) imageToDelete = bookDetails.cover;
 
     // Parsing the category back to an object
-    bookBodyMapped.category = isJson(category) ? JSON.parse(category) : category;
+    const { category } = payloadMapped;
+    payloadMapped.category = JSON.parse(category)
 
-    // Creating a creation date 
-    bookBodyMapped.creationDate = format(new Date(), 'yyyy-MM-dd');
-
-    if (!exists(category) || category === 'noCategory') {
-      bookBodyMapped.category = { value: 'noCategory', label: 'No Category' }
-    }
-
-    if (!validateForm()) dispatch(updateBook(bookBodyMapped, coverImage, imgHasChanged, imageToDelete, callback));
+    if (!validateForm())
+      dispatch(updateBook(payloadMapped, imageToDelete, callback));
   }
 
   function submitForm() {
@@ -377,7 +369,7 @@ function Home() {
       <div>
         <label for='category'>Category: </label>
         <Select
-          value={bookBody.category}
+          value={bookBody?.category?.value}
           type='select'
           placeholder='Select a category'
           onChange={onInputsChange}
@@ -387,7 +379,9 @@ function Home() {
           errorMessage='Please, inform the category'
         >
           {categoriesList.map(category => (
-            <option selected={category.value === 'noCategory'} value={JSON.stringify(category)}>
+            <option
+              selected={JSON.stringify({ label: 'No Category', value: 'noCategory' })}
+              value={JSON.stringify(category)}>
               {category.label}
             </option>
           ))}
