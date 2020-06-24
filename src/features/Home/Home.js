@@ -21,10 +21,9 @@ import imageCompression from 'browser-image-compression';
 
 // Redux
 import { useDispatch, useSelector } from 'react-redux';
-import { getBooks, getCategories, postBook, getBookById, updateBook } from '../../reducers/book'
+import { getBooks, getCategories, postBook, getBookById, updateBook, dltBook } from '../../reducers/book'
 import Book from '../Book/Book';
 import { toast } from 'react-toastify';
-import { createBook } from '../../services/book';
 
 function Home() {
 
@@ -96,12 +95,12 @@ function Home() {
       setFormError(newFormError);
       // Returns boolean if any errors
       return errors.length > 0
-    }
+    };
 
     // Creating an array of fields to be used in validation function as form field parameters
     const fieldsToValidate = ['title', 'author']
     return validateFields(fieldsToValidate);
-  }
+  };
 
   function submitFormCallback() {
     setModalVisible(false);
@@ -109,18 +108,28 @@ function Home() {
     setCoverPreview(null);
     setShowBookDetails(false);
     retrieveBooks();
-  }
+  };
 
   function mapBookDataToForm() {
     setCoverPreview(bookDetails.cover);
     setBookBody(bookDetails);
-  }
+  };
 
   function editBook() {
     mapBookDataToForm();
     setIsUpdating(true)
     setModalVisible(true);
-  }
+  };
+
+  function deleteBookCallback() {
+    setShowBookDetails(false);
+    setBookBody(defaultBookBody);
+    retrieveBooks();
+  };
+
+  function deleteBook() {
+    dispatch(dltBook(bookDetails, deleteBookCallback))
+  };
 
   function handleCreateBook() {
     const callback = submitFormCallback;
@@ -168,7 +177,7 @@ function Home() {
     // Checking if cover image is the same as before
     // to prevent unecessary upload
     let coverImage;
-    let imageToDelete = null;    
+    let imageToDelete = null;
 
     const isTheSameCover = typeof bookDetails.cover === 'string' &&
       typeof cover === 'string' &&
@@ -297,7 +306,7 @@ function Home() {
    * @param {string} category 
    */
   function renderEmptyData(category) {
-    const existsData = bookList.some(currentBook => currentBook.category.value === category.value);
+    const existsData = bookList.some(currentBook => currentBook.category?.value === category.value && currentBook.deleted === false);    
     if (!existsData) return <Empty text='No books in this category' />;
     return null
   };
@@ -435,6 +444,7 @@ function Home() {
           book={bookDetails}
           setShowBookDetails={setShowBookDetails}
           editBook={editBook}
+          deleteBook={deleteBook}
         />
         :
         <>
@@ -475,7 +485,7 @@ function Home() {
                     getBooksLoading ? <Spin /> :
                       <>
                         {bookList.map(book => {
-                          if (book.category.value === currentCategory?.value)
+                          if (book.category?.value === currentCategory?.value && book.deleted === false)
                             return (
                               <div key={book.id} className='book-item'>
                                 <img onClick={() => retrieveBookById(book.id)} className='book-cover' alt='book cover' src={book.cover} />

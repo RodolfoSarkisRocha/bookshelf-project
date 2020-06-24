@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { fetchBooks, fetchCategories, postImage, createBook, fetchBookById, deleteImage, putBook } from '../services/book';
+import { fetchBooks, fetchCategories, postImage, createBook, fetchBookById, deleteImage, putBook, deleteBook } from '../services/book';
 import { toast } from 'react-toastify';
 
 export const bookSlice = createSlice({
@@ -9,6 +9,7 @@ export const bookSlice = createSlice({
     bookList: [],
     categoriesList: [],
     createBookLoading: false,
+    deleteBookLoading: false,
     error: false,
     getBookLoading: false,
     updateBookLoading: false
@@ -83,7 +84,7 @@ export const getBookById = (payload, callback) => async dispatch => {
 };
 
 export const updateBook = (payload, bookCover, imgHasChanged, imageToDelete, callback) => async dispatch => {
-  dispatch(setLoading({ loadingTarget: 'updateBookLoading', loadingType: true }));  
+  dispatch(setLoading({ loadingTarget: 'updateBookLoading', loadingType: true }));
   try {
     if (imageToDelete) {
       // Deleting previous cover from the storage if it's different
@@ -108,6 +109,23 @@ export const updateBook = (payload, bookCover, imgHasChanged, imageToDelete, cal
   }
   finally {
     dispatch(setLoading({ loadingTarget: 'updateBookLoading', loadingType: false }));
+  };
+}
+
+export const dltBook = (payload, callback) => async dispatch => {
+  dispatch(setLoading({ loadingTarget: 'deleteBookLoading', loadingType: true }));
+  try {
+    await deleteBook(payload);
+
+    toast.success('Book deleted successfully!');
+
+    if (callback) callback();
+  }
+  catch (err) {
+    toast.error('There was a problem deleting the book, try again later!');
+  }
+  finally {
+    dispatch(setLoading({ loadingTarget: 'deleteBookLoading', loadingType: false }));
   };
 }
 

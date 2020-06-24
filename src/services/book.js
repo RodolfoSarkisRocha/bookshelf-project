@@ -86,3 +86,15 @@ export async function putBook({ id, ...payload }) {
     throw err;
   };
 };
+
+export async function deleteBook({ id, ...payload }) {
+  try {
+    await booksDb.doc(id).set({
+      ...payload,
+      deleted: true
+    });
+  }
+  catch (err) {
+    throw err
+  };
+};
