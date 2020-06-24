@@ -14,7 +14,7 @@ export default ({ children, extra, title }) => {
   }, [])
 
   function fixHeaderOnScroll() {
-    if (!isMobile && headerRef) {
+    if (!isMobile && headerRef && headerRef.current) {
       const headerOffSetTop = headerRef.current.offsetTop;
       const isElementAtTop = window.pageYOffset > headerOffSetTop;
       if (isElementAtTop) headerRef.current.classList.add('fixed-header-desktop');

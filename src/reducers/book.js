@@ -83,22 +83,23 @@ export const getBookById = (payload, callback) => async dispatch => {
   };
 };
 
-export const updateBook = (payload, bookCover, imgHasChanged, imageToDelete, callback) => async dispatch => {
+export const updateBook = ({ cover, ...payloadMapped }, imageToDelete, callback) => async dispatch => {
   dispatch(setLoading({ loadingTarget: 'updateBookLoading', loadingType: true }));
-  try {
+  try {    
     if (imageToDelete) {
+
       // Deleting previous cover from the storage if it's different
       // from the new one
       await deleteImage(imageToDelete);
-    };
-    // Uploading image and getting it's download link
-    // to insert into payload body
-    if (imgHasChanged) {
-      const imageDownloadUrl = await postImage(bookCover);
-      payload.cover = imageDownloadUrl;
-    }
 
-    await putBook(payload);
+      // Uploading image and getting it's download link
+      // to insert into payload body
+      const imageDownloadUrl = await postImage(cover);
+      payloadMapped.cover = imageDownloadUrl;
+    }
+    else payloadMapped.cover = cover;
+
+    await putBook(payloadMapped);
 
     toast.success('Book edited successfully!');
 
