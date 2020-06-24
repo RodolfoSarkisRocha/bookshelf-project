@@ -9,12 +9,25 @@ export async function fetchBooks({ sorterDirection, dataIndex }) {
     let booksSnapshot
     if (sorterDirection) booksSnapshot = await booksDb.orderBy(dataIndex, sorterDirection).get();
     else booksSnapshot = await booksDb.get();
-    const books = booksSnapshot.docs.map(doc => {
-      const book = doc.data();
-      book.id = doc.id;
-      return book;
-    });
+    const books = booksSnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
     return books;
+  }
+  catch (err) {
+    throw err;
+  };
+};
+
+export async function fetchBookById(id) {
+  try {
+    const response = await booksDb.doc(id).get();
+    const responseMapped = {
+      id: response.id,
+      ...response.data()
+    }
+    return responseMapped
   }
   catch (err) {
     throw err;
@@ -45,6 +58,16 @@ export async function postImage(file) {
   catch (err) { throw err };
 };
 
+export async function deleteImage(url) {
+  try {
+    const fileRef = firebase.storage().refFromURL(url);
+    await fileRef.delete();
+  }
+  catch (err) {
+    throw err
+  }
+}
+
 export async function createBook(payload) {
   try {
     const response = await booksDb.add(payload);
@@ -52,5 +75,26 @@ export async function createBook(payload) {
   }
   catch (err) {
     throw err;
+  };
+};
+
+export async function putBook({ id, ...payload }) {
+  try {
+    await booksDb.doc(id).set(payload);
+  }
+  catch (err) {
+    throw err;
+  };
+};
+
+export async function deleteBook({ id, ...payload }) {
+  try {
+    await booksDb.doc(id).set({
+      ...payload,
+      deleted: true
+    });
+  }
+  catch (err) {
+    throw err
   };
 };

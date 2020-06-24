@@ -1,8 +1,12 @@
-body {
+
+html, body {
   margin: 0;
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Comic Sans MS", cursive, sans-serif;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  -moz-osx-font-smoothing: grayscale;  
+  height: 100%;
+  width: 100%;
+  background-color: rgba(234, 234, 234, 0.80);
 }
 
 *,

@@ -30,7 +30,7 @@
   display: flex;
   box-sizing: border-box;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   text-align: center;
   padding: 5px;
@@ -48,7 +48,8 @@
   font-size: 18px;
   font-weight: bold;
   padding: 5px;
-  word-break: break-all;
+  word-break: normal;
+  max-width: 200px;
 }
 
 .category-header {
@@ -68,8 +69,8 @@
 }
 
 .category-container {
-  margin: 10px 0;
-  background-color: rgba($color: #aca5a5, $alpha: 0.2);
+  margin: 24px 0;
+  box-shadow: 0px 17px 4px -10px rgba(0,0,0,0.4);
   border-radius: 5px;
 }
 

@@ -33,8 +33,8 @@ export default ({ children, extra, title }) => {
     <div ref={headerRef} style={{ marginBottom: '10px' }}>
       <div id='header' className='header-container'>
         <div className='title-container'>
-          <div>{title}</div>
-          <div onClick={expandFilterContainer}>
+          <div className='header-title'>{title}</div>
+          <div className='extra-content' onClick={expandFilterContainer}>
             {extra}
           </div>
         </div>
