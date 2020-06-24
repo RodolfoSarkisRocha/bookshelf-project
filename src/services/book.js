@@ -49,7 +49,6 @@ export async function fetchCategories() {
 };
 
 export async function postImage(file) {
-  debugger
   try {
     const storageRef = firebase.storage().ref();
     const fileRef = storageRef.child(file.name);
@@ -59,11 +58,29 @@ export async function postImage(file) {
   catch (err) { throw err };
 };
 
+export async function deleteImage(url) {
+  try {
+    const fileRef = firebase.storage().refFromURL(url);
+    await fileRef.delete();
+  }
+  catch (err) {
+    throw err
+  }
+}
+
 export async function createBook(payload) {
-  debugger
   try {
     const response = await booksDb.add(payload);
     return response;
+  }
+  catch (err) {
+    throw err;
+  };
+};
+
+export async function putBook({ id, ...payload }) {
+  try {
+    await booksDb.doc(id).set(payload);
   }
   catch (err) {
     throw err;

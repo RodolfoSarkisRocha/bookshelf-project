@@ -7,7 +7,7 @@ import './Home.scss';
 // Components
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Sorter from '../../components/Sorter/Sorter';
-import { exists } from '../../utils/booleanUtils';
+import { exists, isJson } from '../../utils/booleanUtils';
 import Header from '../../components/Header/Header';
 import Button from '../../components/Button/Button';
 import Modal from '../../components/Modal/Modal';
@@ -21,9 +21,10 @@ import imageCompression from 'browser-image-compression';
 
 // Redux
 import { useDispatch, useSelector } from 'react-redux';
-import { getBooks, getCategories, postBook, getBookById } from '../../reducers/book'
+import { getBooks, getCategories, postBook, getBookById, updateBook } from '../../reducers/book'
 import Book from '../Book/Book';
 import { toast } from 'react-toastify';
+import { createBook } from '../../services/book';
 
 function Home() {
 
@@ -37,7 +38,8 @@ function Home() {
     cover: null,
     category: null,
     deleted: false,
-    creationDate: null
+    creationDate: null,
+    comments: []
   }
   const bookError = {
     title: false,
@@ -45,8 +47,8 @@ function Home() {
     description: false,
     cover: false,
     category: false,
-    deleted: false,
-    creationDate: false
+    creationDate: false,
+    comments: false
   }
 
   // State
@@ -55,6 +57,8 @@ function Home() {
   const [formError, setFormError] = useState(bookError);
   const [coverPreview, setCoverPreview] = useState(null);
   const [showBookDetails, setShowBookDetails] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [imgHasChanged, setImgHasChanged] = useState(false);
 
   // Use Effect
   useEffect(() => {
@@ -72,6 +76,7 @@ function Home() {
   const categoriesList = useSelector(state => state.categoriesList);
   const getBooksLoading = useSelector(state => state.getBookLoading);
   const createBookLoading = useSelector(state => state.createBookLoading);
+  const updateBookLoading = useSelector(state => state.updateBookLoading);
   const bookDetails = useSelector(state => state.bookBody);
 
   function validateForm() {
@@ -81,7 +86,7 @@ function Home() {
       let errors = [];
       // For each field passed, take it's respective value and verifies if it does not exist, then push the field to errors
       fieldsToValidate.forEach(field => {
-        const value = document.forms["book-form"][field].value;
+        const value = bookBody[field];
         if (!exists(value) || value.trim() === '') errors.push(field);
       })
       // Copying form errors default object
@@ -98,33 +103,108 @@ function Home() {
     return validateFields(fieldsToValidate);
   }
 
-  function createBookCallback() {
+  function submitFormCallback() {
     setModalVisible(false);
     setBookBody(defaultBookBody);
     setCoverPreview(null);
+    setShowBookDetails(false);
     retrieveBooks();
   }
 
-  function createBook(event) {
-    event.preventDefault();
-    const callback = createBookCallback;
-    const bookCover = bookBody.cover;
+  function mapBookDataToForm() {
+    setCoverPreview(bookDetails.cover);
+    setBookBody(bookDetails);
+  }
+
+  function editBook() {
+    mapBookDataToForm();
+    setIsUpdating(true)
+    setModalVisible(true);
+  }
+
+  function handleCreateBook() {
+    const callback = submitFormCallback;
+    // Copying state array to prevent reference problems
     const bookBodyMapped = JSON.parse(JSON.stringify(bookBody));
+
+    const {
+      category,
+      comments
+    } = bookBodyMapped;
+
+    // Getting the not stringyfied cover image 
+    const { cover } = bookBody;
+
+    let coverImage;
+
+    coverImage = cover;
+
+    // Parsing the category back to an object
+    bookBodyMapped.category = isJson(category) ? JSON.parse(category) : category;
+
+    // Creating a creation date 
     bookBodyMapped.creationDate = format(new Date(), 'yyyy-MM-dd');
-    // Changing the stringy category from the select event back to an object
-    bookBodyMapped.category = bookBodyMapped.category ? JSON.parse(bookBodyMapped.category) : null
-    if (!exists(bookBodyMapped.category) || bookBodyMapped.category === 'noCategory') {
+
+    if (!exists(category) || category === 'noCategory') {
       bookBodyMapped.category = { value: 'noCategory', label: 'No Category' }
     }
-    const payloadMapped = {
-      bookCover,
-      bookBodyMapped
-    };
-    if (!validateForm()) dispatch(postBook(payloadMapped, callback));
+
+    if (!validateForm()) dispatch(postBook(bookBodyMapped, coverImage, callback));
   };
 
+  function handleUpdateBook() {
+    const callback = submitFormCallback;
+    // Copying state array to prevent reference problems
+    const bookBodyMapped = JSON.parse(JSON.stringify(bookBody));
+
+    const {
+      category,
+      comments
+    } = bookBodyMapped;
+
+    // Getting the not stringyfied cover image 
+    const { cover } = bookBody;
+
+    // Checking if cover image is the same as before
+    // to prevent unecessary upload
+    let coverImage;
+    let imageToDelete = null;    
+
+    const isTheSameCover = typeof bookDetails.cover === 'string' &&
+      typeof cover === 'string' &&
+      bookDetails.cover === cover &&
+      imgHasChanged;
+
+    if (isTheSameCover) imageToDelete = bookDetails.cover;
+
+    coverImage = cover;
+
+    // Parsing the category back to an object
+    bookBodyMapped.category = isJson(category) ? JSON.parse(category) : category;
+
+    // Creating a creation date 
+    bookBodyMapped.creationDate = format(new Date(), 'yyyy-MM-dd');
+
+    if (!exists(category) || category === 'noCategory') {
+      bookBodyMapped.category = { value: 'noCategory', label: 'No Category' }
+    }
+
+    if (!validateForm()) dispatch(updateBook(bookBodyMapped, coverImage, imgHasChanged, imageToDelete, callback));
+  }
+
+  function submitForm() {
+    if (isUpdating) handleUpdateBook();
+    else handleCreateBook();
+  };
+
+  /**
+   * Closes the modal, clear the form fields, set update mode to false
+   */
   function closeModal() {
     setModalVisible(false)
+    setIsUpdating(false)
+    setBookBody(defaultBookBody)
+    setCoverPreview(null)
   };
 
   function openModal() {
@@ -132,7 +212,6 @@ function Home() {
   };
 
   function removeCover() {
-    document.forms['book-form']['cover'].value = null;
     setCoverPreview(null);
     setBookBody({
       ...bookBody,
@@ -158,27 +237,30 @@ function Home() {
    */
   async function handleImageChange(event) {
     const imageFile = event.target.files[0];
+    // Checking if file is of the type image
+    if (imageFile && imageFile.type.split('/')[0] === 'image') {
 
-    const options = {
-      maxSizeMB: 1,
-      maxWidthOrHeight: 300,
-      useWebWorker: true
-    };
+      const options = {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 300,
+        useWebWorker: true
+      };
 
+      try {
+        const compressedImage = await imageCompression(imageFile, options);
+        // This is needed to set a file into the preview field
+        const previewFile = await getDataUrlFromFile(compressedImage);
+        setCoverPreview(previewFile);
 
-    try {
-      const compressedImage = await imageCompression(imageFile, options);
-      // This is needed to set a file into the preview field
-      const previewFile = await getDataUrlFromFile(compressedImage);
-      setCoverPreview(previewFile);
-
-      setBookBody({
-        ...bookBody,
-        cover: compressedImage
-      });
-    }
-    catch (err) {
-      toast.error('There was a problem with your image, try again or send a different image')
+        setBookBody({
+          ...bookBody,
+          cover: compressedImage
+        });
+        setImgHasChanged(true)
+      }
+      catch (err) {
+        toast.error('There was a problem with your image, try again or send a different image')
+      }
     }
   }
 
@@ -239,11 +321,7 @@ function Home() {
   ];
 
   const renderBookCreation = () => (
-    <form
-      onSubmit={createBook}
-      id='book-form'
-      className='responsive-form'
-    >
+    <div className='responsive-form'>
       <label>Cover: </label>
       <div className='file-upload-container'>
         {coverPreview &&
@@ -277,7 +355,7 @@ function Home() {
         <Input
           value={bookBody.title}
           onChange={onInputsChange}
-          maxLength={50}
+          maxLength={100}
           width='100%'
           name='title'
           error={formError.title}
@@ -289,7 +367,7 @@ function Home() {
         <Input
           value={bookBody.author}
           onChange={onInputsChange}
-          maxLength={50}
+          maxLength={100}
           width='100%'
           name='author'
           error={formError.author}
@@ -303,7 +381,6 @@ function Home() {
           type='select'
           placeholder='Select a category'
           onChange={onInputsChange}
-          maxLength={50}
           width='100%'
           name='category'
           error={formError.category}
@@ -328,13 +405,13 @@ function Home() {
           name='description'
         />
       </div>
-    </form>
+    </div>
   );
 
   const renderModalFooter = () => (
     <>
       <Button
-        loading={createBookLoading}
+        loading={createBookLoading || updateBookLoading}
         loadingCss={{ color: '#f1f1f1', size: 16 }}
         className='mr10'
         onClick={closeModal}
@@ -342,12 +419,11 @@ function Home() {
         Cancel
       </Button>
       <Button
-        loading={createBookLoading}
+        loading={createBookLoading || updateBookLoading}
         loadingCss={{ color: '#f1f1f1', size: 16 }}
-        type='submit'
-        form='book-form'
+        onClick={submitForm}
       >
-        Confirm
+        {isUpdating ? 'Edit' : 'Confirm'}
       </Button>
     </>
   );
@@ -355,7 +431,11 @@ function Home() {
   return (
     <Fragment>
       {showBookDetails ?
-        <Book book={bookDetails} setShowBookDetails={setShowBookDetails} />
+        <Book
+          book={bookDetails}
+          setShowBookDetails={setShowBookDetails}
+          editBook={editBook}
+        />
         :
         <>
           <Header
@@ -412,16 +492,16 @@ function Home() {
             )
             )}
           </div>
-          <Modal
-            title='Book'
-            visible={modalVisible}
-            width={mobileDisplay ? '80%' : '60%'}
-            footer={renderModalFooter()}
-          >
-            {renderBookCreation()}
-          </Modal>
         </>
       }
+      <Modal
+        title='Book'
+        visible={modalVisible}
+        width={mobileDisplay ? '80%' : '60%'}
+        footer={renderModalFooter()}
+      >
+        {renderBookCreation()}
+      </Modal>
     </Fragment>
   );
 };

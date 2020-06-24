@@ -5,7 +5,7 @@ import { exists } from '../../utils/booleanUtils';
 import Header from '../../components/Header/Header';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-export default ({ book, setShowBookDetails }) => {
+export default ({ book, setShowBookDetails, editBook }) => {
 
   const {
     id,
@@ -68,7 +68,7 @@ export default ({ book, setShowBookDetails }) => {
         </div >
       </div>
       <div className='book-actions'>
-        <div className='edit-button'>
+        <div onClick={editBook} className='edit-button'>
           <FontAwesomeIcon icon={['fas', 'edit']} />
         </div>
         <div className='delete-button'>

@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { fetchBooks, fetchCategories, postImage, createBook, fetchBookById } from '../services/book';
+import { fetchBooks, fetchCategories, postImage, createBook, fetchBookById, deleteImage, putBook } from '../services/book';
 import { toast } from 'react-toastify';
 
 export const bookSlice = createSlice({
@@ -10,7 +10,8 @@ export const bookSlice = createSlice({
     categoriesList: [],
     createBookLoading: false,
     error: false,
-    getBookLoading: false
+    getBookLoading: false,
+    updateBookLoading: false
   },
   reducers: {
     getBookByIdSuccess: (state, action) => ({ ...state, bookBody: action.payload }),
@@ -46,16 +47,15 @@ export const getCategories = () => async dispatch => {
   };
 };
 
-export const postBook = (payload, callback) => async dispatch => {
+export const postBook = (payload, bookCover, callback) => async dispatch => {
   dispatch(setLoading({ loadingTarget: 'createBookLoading', loadingType: true }));
   try {
-    const bookBody = JSON.parse(JSON.stringify(payload.bookBodyMapped));
-    const bookCover = payload.bookCover;
+
     if (bookCover) {
       const imageDownloadUrl = await postImage(bookCover);
-      bookBody.cover = imageDownloadUrl;
+      payload.cover = imageDownloadUrl;
     }
-    await createBook(bookBody);
+    await createBook(payload);
     toast.success('Book created successfully!');
     if (callback) callback();
   }
@@ -78,8 +78,37 @@ export const getBookById = (payload, callback) => async dispatch => {
     toast.error('There was a problem getting the book details, try again later!');
   }
   finally {
-    dispatch(setLoading({ loadingTarget: 'createBookLoading', loadingType: true }))
+    dispatch(setLoading({ loadingTarget: 'createBookLoading', loadingType: false }))
   };
 };
+
+export const updateBook = (payload, bookCover, imgHasChanged, imageToDelete, callback) => async dispatch => {
+  dispatch(setLoading({ loadingTarget: 'updateBookLoading', loadingType: true }));  
+  try {
+    if (imageToDelete) {
+      // Deleting previous cover from the storage if it's different
+      // from the new one
+      await deleteImage(imageToDelete);
+    };
+    // Uploading image and getting it's download link
+    // to insert into payload body
+    if (imgHasChanged) {
+      const imageDownloadUrl = await postImage(bookCover);
+      payload.cover = imageDownloadUrl;
+    }
+
+    await putBook(payload);
+
+    toast.success('Book edited successfully!');
+
+    if (callback) callback();
+  }
+  catch (err) {
+    toast.error('There was a problem editing the book, try again later!');
+  }
+  finally {
+    dispatch(setLoading({ loadingTarget: 'updateBookLoading', loadingType: false }));
+  };
+}
 
 export default bookSlice.reducer;
