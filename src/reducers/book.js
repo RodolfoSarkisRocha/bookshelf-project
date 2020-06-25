@@ -131,14 +131,15 @@ export const dltBook = (payload, callback) => async dispatch => {
 }
 
 export const createComment = (payload, callback) => async dispatch => {
-  try{
+  try {
     await postComment(payload);
-    if(callback) callback();
+    dispatch(getBookById(payload.parentId));
+    if (callback) callback();
   }
-  catch(err) {
+  catch (err) {
     toast.error('There was a problem posting your comment, try again later!');
   }
-  finally{}
+  finally { }
 }
 
 export default bookSlice.reducer;

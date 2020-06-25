@@ -21,7 +21,6 @@
 }
 
 .comments-options {
-  justify-self: flex-end;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -54,14 +53,14 @@
 }
 .comments-creation-date {
   font-size: 14px;
-  color: #a4b8c9;
+  color: #a4b8c9;  
   margin-right: 10px;
 }
 
 .comments-main-user-area {
-  display: flex;
-  justify-content: flex-start;
+  display: flex;  
   align-items: center;
+  justify-content: space-between;
 }
 
 .comments-text {

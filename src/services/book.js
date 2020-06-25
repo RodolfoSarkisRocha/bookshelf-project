@@ -23,7 +23,7 @@ export async function fetchBooks({ sorterDirection, dataIndex }) {
 export async function fetchBookById(id) {
   try {
     const response = await booksDb.doc(id).get();
-    const commentsResponse = await booksDb.doc(id).collection('comments').get();
+    const commentsResponse = await booksDb.doc(id).collection('comments').orderBy('creationDate').get();
     const commentsMapped = commentsResponse.docs.map(currentComment => currentComment.data());
     const responseMapped = {
       id: response.id,
@@ -102,12 +102,12 @@ export async function deleteBook({ id, ...payload }) {
   };
 };
 
-export async function postComment({ bookId, commentBody }) {
+export async function postComment({ parentId, ...payload }) {
   try {
     await booksDb
-      .doc(bookId)
+      .doc(parentId)
       .collection('comments')
-      .add(commentBody);
+      .add(payload);
   }
   catch (err) { throw err };
 };
