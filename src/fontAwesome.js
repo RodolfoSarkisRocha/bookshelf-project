@@ -5,6 +5,7 @@ import { faCalendar, faSearch, faArrowUp, faArrowDown, faBook, faSortAlphaUp, fa
 library.add(
   faCalendar,
   faSearch,
+  faUser,
   faFilter,
   faEye,
   faArchive,

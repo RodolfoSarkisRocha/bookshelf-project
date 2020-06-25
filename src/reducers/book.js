@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { fetchBooks, fetchCategories, postImage, createBook, fetchBookById, deleteImage, putBook, deleteBook } from '../services/book';
+import { fetchBooks, fetchCategories, postImage, createBook, fetchBookById, deleteImage, putBook, deleteBook, postComment } from '../services/book';
 import { toast } from 'react-toastify';
 
 export const bookSlice = createSlice({
@@ -85,7 +85,7 @@ export const getBookById = (payload, callback) => async dispatch => {
 
 export const updateBook = ({ cover, ...payloadMapped }, imageToDelete, callback) => async dispatch => {
   dispatch(setLoading({ loadingTarget: 'updateBookLoading', loadingType: true }));
-  try {    
+  try {
     if (imageToDelete) {
 
       // Deleting previous cover from the storage if it's different
@@ -128,6 +128,17 @@ export const dltBook = (payload, callback) => async dispatch => {
   finally {
     dispatch(setLoading({ loadingTarget: 'deleteBookLoading', loadingType: false }));
   };
+}
+
+export const createComment = (payload, callback) => async dispatch => {
+  try{
+    await postComment(payload);
+    if(callback) callback();
+  }
+  catch(err) {
+    toast.error('There was a problem posting your comment, try again later!');
+  }
+  finally{}
 }
 
 export default bookSlice.reducer;

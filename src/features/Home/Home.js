@@ -165,7 +165,7 @@ function Home() {
   };
 
   function handleUpdateBook() {
-    const callback = submitFormCallback;    
+    const callback = submitFormCallback;
 
     // Copying state array to prevent reference problems
     const bookBodyMapped = JSON.parse(JSON.stringify(bookBody));
@@ -298,7 +298,7 @@ function Home() {
    * @param {string} category 
    */
   function renderEmptyData(category) {
-    const existsData = bookList.some(currentBook => currentBook.category?.value === category.value && currentBook.deleted === false);    
+    const existsData = bookList.some(currentBook => currentBook.category?.value === category.value && currentBook.deleted === false);
     if (!existsData) return <Empty text='No books in this category' />;
     return null
   };

@@ -1,0 +1,122 @@
+@import "../../../helpers/variables.scss";
+
+.comments-card {
+  display: flex;
+  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande", "Lucida Sans", Arial, sans-serif;
+  justify-content: flex-start;
+  flex-direction: column;
+  border-radius: 10px;
+  background-color: rgba(0,0,0,0.05);
+  padding: 24px;
+  box-shadow: 0px 17px 4px -12px rgba(0, 0, 0, 0.4);
+  -webkit-box-shadow: 0px 17px 4px -12px rgba(0, 0, 0, 0.4);
+  -moz-box-shadow: 0px 17px 4px -12px rgba(0, 0, 0, 0.4);
+}
+
+.comments-item {
+  display: grid;
+  grid-template-columns: 50px 1fr;
+  grid-template-rows: 1fr;
+  margin: 10px 0;
+}
+
+.comments-options {
+  justify-self: flex-end;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  svg {
+    font-size: 24px;
+    cursor: pointer;
+  }
+}
+
+.comments-edit {
+  color: $primary-color;
+  margin-right: 10px;
+}
+
+.comments-delete {
+  color: #ef5350;
+}
+
+.comments-main {
+  padding: 10px;
+}
+
+.comments-content {
+  width: 100%;
+}
+.comments-username {
+  font-size: 18px;
+  margin-right: 10px;
+  font-weight: bold;
+}
+.comments-creation-date {
+  font-size: 14px;
+  color: #a4b8c9;
+  margin-right: 10px;
+}
+
+.comments-main-user-area {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.comments-text {
+  font-size: 16px;
+  margin-top: 10px;
+  text-align: justify;
+}
+
+.avatar {
+  margin-top: 10px;
+  align-self: flex-start;
+  height: 50px;
+  width: 50px;
+  background-color: rgba(97, 97, 97, 0.5);
+  border-radius: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  svg {
+    font-size: 25px;
+  }
+}
+
+.comments-textarea {
+  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande", "Lucida Sans", Arial, sans-serif;
+  width: 100%;
+  outline: none;
+  border: none;
+  background-color: rgba(172, 179, 228, 0.5);
+  border-radius: 5px;
+  overflow-y: auto;
+  height: 100px;
+  resize: none;
+  padding: 15px;
+  box-sizing: border-box;
+}
+.comments-author-input {
+  width: 100%;
+  padding: 15px;
+  margin-bottom: 10px;
+  outline: none;
+  border: none;
+  background-color: rgba(172, 179, 228, 0.5);
+  border-radius: 5px;
+}
+
+@media screen and (max-width: 768px) {
+  .comments-item {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 50px 1fr;
+    margin: 10px 0;
+  }
+  .avatar {
+    align-self: center;
+    justify-self: center;
+  }
+}
