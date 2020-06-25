@@ -115,6 +115,19 @@ export async function postComment(payload) {
   catch (err) { throw err };
 };
 
+export async function putComment({ id, ...payload }) {
+  try {
+    await booksDb
+      .doc(payload.parentId)
+      .collection('comments')
+      .doc(id)
+      .set(payload);
+  }
+  catch (err) {
+    throw err;
+  };
+};
+
 export async function deleteComment(payload, targetId, parentId) {
   try {
     await booksDb

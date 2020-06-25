@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { fetchBooks, fetchCategories, postImage, createBook, fetchBookById, deleteImage, putBook, deleteBook, postComment, deleteComment } from '../services/book';
+import { fetchBooks, fetchCategories, postImage, createBook, fetchBookById, deleteImage, putBook, deleteBook, postComment, deleteComment, putComment } from '../services/book';
 import { toast } from 'react-toastify';
 
 export const bookSlice = createSlice({
@@ -35,7 +35,7 @@ export const getBooks = payload => async dispatch => {
   }
   finally {
     dispatch(setLoading({ loadingTarget: 'getBookLoading', loadingType: false }));
-  }
+  };
 };
 
 export const getCategories = () => async dispatch => {
@@ -111,7 +111,7 @@ export const updateBook = ({ cover, ...payloadMapped }, imageToDelete, callback)
   finally {
     dispatch(setLoading({ loadingTarget: 'updateBookLoading', loadingType: false }));
   };
-}
+};
 
 export const dltBook = (payload, callback) => async dispatch => {
   dispatch(setLoading({ loadingTarget: 'deleteBookLoading', loadingType: true }));
@@ -128,9 +128,10 @@ export const dltBook = (payload, callback) => async dispatch => {
   finally {
     dispatch(setLoading({ loadingTarget: 'deleteBookLoading', loadingType: false }));
   };
-}
+};
 
 export const createComment = (payload, callback) => async dispatch => {
+  dispatch(setLoading({ loadingTarget: 'createCommentLoading', loadingType: true }));
   try {
     await postComment(payload);
     dispatch(getBookById(payload.parentId));
@@ -139,10 +140,13 @@ export const createComment = (payload, callback) => async dispatch => {
   catch (err) {
     toast.error('There was a problem posting your comment, try again later!');
   }
-  finally { }
-}
+  finally {
+    dispatch(setLoading({ loadingTarget: 'createCommentLoading', loadingType: false }))
+  };
+};
 
 export const dltComment = (payload, targetId, parentId) => async dispatch => {
+  dispatch(setLoading({ loadingTarget: 'deleteBookLoading', loadingType: true }));
   try {
     await deleteComment(payload, targetId, parentId);
     dispatch(getBookById(parentId));
@@ -150,7 +154,24 @@ export const dltComment = (payload, targetId, parentId) => async dispatch => {
   catch (err) {
     toast.error('There was a problem deleting your comment, try again later!');
   }
-  finally { }
+  finally {
+    dispatch(setLoading({ loadingTarget: 'deleteBookLoading', loadingType: false }));
+  };
+};
+
+export const updateComment = (payload, callback) => async dispatch => {
+  dispatch(setLoading({ loadingTarget: 'updateCommentLoading', loadingType: true }));
+  try {
+    await putComment(payload);
+    dispatch(getBookById(payload.parentId));
+    if (callback) callback();
+  }
+  catch (err) {
+    toast.error('There was a problem updating your comment, try again later!');
+  }
+  finally {
+    dispatch(setLoading({ loadingTarget: 'updateCommentLoading', loadingType: false }))
+  }
 }
 
 export default bookSlice.reducer;
