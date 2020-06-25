@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { fetchBooks, fetchCategories, postImage, createBook, fetchBookById, deleteImage, putBook, deleteBook, postComment } from '../services/book';
+import { fetchBooks, fetchCategories, postImage, createBook, fetchBookById, deleteImage, putBook, deleteBook, postComment, deleteComment } from '../services/book';
 import { toast } from 'react-toastify';
 
 export const bookSlice = createSlice({
@@ -138,6 +138,17 @@ export const createComment = (payload, callback) => async dispatch => {
   }
   catch (err) {
     toast.error('There was a problem posting your comment, try again later!');
+  }
+  finally { }
+}
+
+export const dltComment = (payload, targetId, parentId) => async dispatch => {
+  try {
+    await deleteComment(payload, targetId, parentId);
+    dispatch(getBookById(parentId));
+  }
+  catch (err) {
+    toast.error('There was a problem deleting your comment, try again later!');
   }
   finally { }
 }
