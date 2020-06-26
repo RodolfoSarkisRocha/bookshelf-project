@@ -5,11 +5,14 @@ import React from 'react';
 import './App.scss';
 import 'react-toastify/dist/ReactToastify.css';
 
-//Components
+// Components
 import Home from './features/Home/Home';
-import { ToastContainer } from 'react-toastify';
+import Category from './features/Category/Category';
 import TopNav from './components/TopNav/TopNav';
 import GoToTopBtn from './components/GoToTopBtn/GoToTopBtn';
+import { ToastContainer } from 'react-toastify';
+
+// Router
 import { BrowserRouter as Router, Redirect, Route, Switch } from 'react-router-dom';
 
 function App() {
@@ -19,7 +22,7 @@ function App() {
       <div className='content-container'>
         <Switch>
           <Route path='/' exact component={Home} />
-          <Route path='/category' exact component={null} />
+          <Route path='/category' component={Category} />
           <Redirect from='*' exact to='/' />
         </Switch>
       </div>

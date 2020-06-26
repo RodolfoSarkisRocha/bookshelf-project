@@ -4,11 +4,16 @@ import 'firebase/storage';
 const booksDb = firebase.firestore().collection('books');
 const categoriesDb = firebase.firestore().collection('categories');
 
-export async function fetchBooks({ sorterDirection, dataIndex }) {
+export async function fetchBooks(payload, filter) {    
+  // Mapping different types of get from firebase to prevent
+  // many 'Ifs' being created
+  const storageByFilterType = new Map([
+    ['orderBy', async () => await booksDb.orderBy(payload.dataIndex, payload?.sortBy).get()],
+    ['filterByField', async () => await booksDb.where(`${payload.fieldName}.value`, '==', payload.value).get()],
+    [null, async () => await booksDb.get()]
+  ])
   try {
-    let booksSnapshot
-    if (sorterDirection) booksSnapshot = await booksDb.orderBy(dataIndex, sorterDirection).get();
-    else booksSnapshot = await booksDb.get();
+    const booksSnapshot = await storageByFilterType.get(filter)();
     const books = booksSnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()

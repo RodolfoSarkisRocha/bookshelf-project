@@ -24,10 +24,11 @@ export const bookSlice = createSlice({
 
 const { getBookSuccess, setLoading, getCategoriesSuccess, getBookByIdSuccess } = bookSlice.actions;
 
-export const getBooks = payload => async dispatch => {
+export const getBooks = (payload, filter) => async dispatch => {
   dispatch(setLoading({ loadingTarget: 'getBookLoading', loadingType: true }));
   try {
-    const response = await fetchBooks(payload);
+    await dispatch(getCategories());
+    const response = await fetchBooks(payload, filter);
     dispatch(getBookSuccess(response));
   }
   catch (err) {
