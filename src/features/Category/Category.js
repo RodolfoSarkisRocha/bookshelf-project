@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { getBooks } from '../../reducers/book';
 import { useDispatch, useSelector } from 'react-redux';
@@ -36,6 +36,12 @@ export default props => {
   const [filterIconClass, setFilterIconClass] = useState('arrow-down');
   const [category, setCategory] = useState('noCategory');
   const [initialRender, setInitialRender] = useState(true);
+  const [showDescriptions, setShowDescriptions] = useState([])
+
+  useEffect(() => {
+    const defaultShowDescriptions = bookList.map(() => false);
+    setShowDescriptions(defaultShowDescriptions);
+  }, [bookList])
 
   // Getting query value to retrieve books by category
   useEffect(() => {
@@ -102,6 +108,44 @@ export default props => {
     </div>
   )
 
+  function showAllDescription(index) {
+    const showDescriptionsCopy = JSON.parse(JSON.stringify(showDescriptions));
+    showDescriptionsCopy[index] = !showDescriptionsCopy[index];
+    setShowDescriptions(showDescriptionsCopy);
+    const descriptionElement = document.getElementById(`description-id-${index}`)
+    if (descriptionElement)
+      if (showDescriptionsCopy[index] === true) descriptionElement.classList.add('category-book-description-uncollapsed');
+      else descriptionElement.classList.remove('category-book-description-uncollapsed');
+  };
+
+
+  // Setting the 'read more' button visibility dynamically depending on div's height
+  useEffect(() => {
+    const descriptionElements = document.getElementsByClassName(`category-book-description-collapsed`);
+    const readMoreElements = document.getElementsByClassName(`read-more`);
+    if (descriptionElements.length > 0) {
+      for (let index = 0; index < descriptionElements.length; index++) {
+        const element = descriptionElements[index];
+        const descriptionHeight = element.scrollHeight;
+
+        // Getting element max allowed height and replacing all non numbers characters
+        const maxAllowedHeight = getComputedStyle(element).maxHeight.replace(/[^0-9]/g, '');
+
+        // Since use effect runs every render, this is checking if classes are already set
+
+        const classAlreadySet =
+          (readMoreElements[index].classList.contains("read-more-visible") ||
+          readMoreElements[index].classList.contains("read-more-invisible"));
+
+        if (!classAlreadySet) {
+          if (maxAllowedHeight > descriptionHeight)
+            readMoreElements[index].classList.add('read-more-invisible');
+          else readMoreElements[index].classList.add('read-more-visible');;
+        }
+      };
+    };
+  });
+
   return (
     <>
       <Header
@@ -120,7 +164,7 @@ export default props => {
       </Header>
       {getBooksLoading ? <Spin /> :
         <div className='category-books'>
-          {bookList.map(book => {
+          {bookList.map((book, index) => {
             if (book.deleted === false)
               return (
                 <div key={book.id} className='category-book-item'>
@@ -135,7 +179,16 @@ export default props => {
                     <div className='category-book-title'>{book.title}</div>
                     <div className='category-book-author'>by {book.author}</div>
                     <div className='category-book-creation-date'>{formatDate(book.creationDate)}</div>
-                    <div className='category-book-description'>{book.description}</div>
+                    <div id={`description-id-${index}`} className='category-book-description-collapsed'>
+                      {book.description}
+                    </div>
+                    <div
+                      onClick={() => showAllDescription(index)}
+                      id={`read-more-id-${index}`}
+                      className='read-more'
+                    >
+                      {showDescriptions[index] ? 'Read Less' : 'Read More'}
+                    </div>
                   </div>
                 </div>
               )
