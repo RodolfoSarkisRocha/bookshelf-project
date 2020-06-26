@@ -46,6 +46,7 @@ export default props => {
       });
       setCategoryTitle(categories[queryParamToCamelCase]);
       dispatch(getBooks({ fieldName: 'category', value: queryParamToCamelCase }, 'filterByField'));
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }, []);
 
