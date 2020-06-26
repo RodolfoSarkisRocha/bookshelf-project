@@ -14,7 +14,7 @@ export default ({ children, extra, title }) => {
   }, [])
 
   function fixHeaderOnScroll() {
-    if (!isMobile && headerRef) {
+    if (!isMobile && headerRef && headerRef.current) {
       const headerOffSetTop = headerRef.current.offsetTop;
       const isElementAtTop = window.pageYOffset > headerOffSetTop;
       if (isElementAtTop) headerRef.current.classList.add('fixed-header-desktop');
@@ -33,8 +33,8 @@ export default ({ children, extra, title }) => {
     <div ref={headerRef} style={{ marginBottom: '10px' }}>
       <div id='header' className='header-container'>
         <div className='title-container'>
-          <div>{title}</div>
-          <div onClick={expandFilterContainer}>
+          <div className='header-title'>{title}</div>
+          <div className='extra-content' onClick={expandFilterContainer}>
             {extra}
           </div>
         </div>

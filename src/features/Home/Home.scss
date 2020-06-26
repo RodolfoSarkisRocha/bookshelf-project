@@ -26,11 +26,29 @@
   margin-bottom: 15px;
 }
 
+.arrow-up {
+  :nth-child(1) svg {
+    transition: transform 0.5s ease;
+    -webkit-transition: -webkit-transform 0.5s ease;
+    -webkit-transform: rotate(180deg);
+    transform: rotate(180deg);
+  }
+}
+
+.arrow-down {
+  :nth-child(1) svg {
+    transition: transform 0.5s ease;
+    -webkit-transition: -webkit-transform 0.5s ease;
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+}
+
 .book-item {
   display: flex;
   box-sizing: border-box;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   text-align: center;
   padding: 5px;
@@ -48,7 +66,8 @@
   font-size: 18px;
   font-weight: bold;
   padding: 5px;
-  word-break: break-all;
+  word-break: normal;
+  max-width: 200px;
 }
 
 .category-header {
@@ -68,13 +87,29 @@
 }
 
 .category-container {
-  margin: 10px 0;
-  background-color: rgba($color: #aca5a5, $alpha: 0.2);
+  margin: 24px 0;
+  box-shadow: 0px 17px 4px -10px rgba(0, 0, 0, 0.4);
+  -webkit-box-shadow: 0px 17px 4px -10px rgba(0, 0, 0, 0.4);
+  -moz-box-shadow: 0px 17px 4px -10px rgba(0, 0, 0, 0.4);
   border-radius: 5px;
 }
 
 .main-content {
   padding: 0 10px;
+}
+
+textarea {
+  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande", "Lucida Sans", Arial, sans-serif;
+  width: 100%;
+  outline: none;
+  border: none;
+  background-color: rgba(172, 179, 228, 0.5);
+  border-radius: 5px;
+  overflow-y: auto;
+  height: 100px;
+  resize: none;
+  padding: 15px;
+  box-sizing: border-box;
 }
 
 .book-cover {
@@ -142,9 +177,12 @@
 .file-upload-buttons {
   display: flex;
   width: 100%;
-  justify-content: space-around;
+  justify-content: center;
   align-items: center;
   margin: 10px 0;
+  button {
+    margin: 0 10px;
+  }
 }
 
 .remove-cover-icon {

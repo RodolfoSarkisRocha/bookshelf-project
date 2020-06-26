@@ -4,17 +4,41 @@ import 'firebase/storage';
 const booksDb = firebase.firestore().collection('books');
 const categoriesDb = firebase.firestore().collection('categories');
 
-export async function fetchBooks({ sorterDirection, dataIndex }) {
+export async function fetchBooks(payload, filter) {    
+  // Mapping different types of get from firebase to prevent
+  // many 'Ifs' being created
+  const storageByFilterType = new Map([
+    ['orderBy', async () => await booksDb.orderBy(payload.dataIndex, payload?.sortBy).get()],
+    ['filterByField', async () => await booksDb.where(`${payload.fieldName}.value`, '==', payload.value).get()],
+    [null, async () => await booksDb.get()]
+  ])
   try {
-    let booksSnapshot
-    if (sorterDirection) booksSnapshot = await booksDb.orderBy(dataIndex, sorterDirection).get();
-    else booksSnapshot = await booksDb.get();
-    const books = booksSnapshot.docs.map(doc => {
-      const book = doc.data();
-      book.id = doc.id;
-      return book;
-    });
+    const booksSnapshot = await storageByFilterType.get(filter)();
+    const books = booksSnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
     return books;
+  }
+  catch (err) {
+    throw err;
+  };
+};
+
+export async function fetchBookById(id) {
+  try {
+    const response = await booksDb.doc(id).get();
+    const commentsResponse = await booksDb.doc(id).collection('comments').orderBy('creationDate').get();
+    const commentsMapped = commentsResponse.docs.map(currentComment => ({
+      ...currentComment.data(),
+      id: currentComment.id
+    }));
+    const responseMapped = {
+      id: response.id,
+      ...response.data(),
+      comments: commentsMapped
+    }
+    return responseMapped
   }
   catch (err) {
     throw err;
@@ -45,6 +69,16 @@ export async function postImage(file) {
   catch (err) { throw err };
 };
 
+export async function deleteImage(url) {
+  try {
+    const fileRef = firebase.storage().refFromURL(url);
+    await fileRef.delete();
+  }
+  catch (err) {
+    throw err
+  }
+}
+
 export async function createBook(payload) {
   try {
     const response = await booksDb.add(payload);
@@ -53,4 +87,59 @@ export async function createBook(payload) {
   catch (err) {
     throw err;
   };
+};
+
+export async function putBook({ id, ...payload }) {
+  try {
+    await booksDb.doc(id).set(payload);
+  }
+  catch (err) {
+    throw err;
+  };
+};
+
+export async function deleteBook({ id, ...payload }) {
+  try {
+    await booksDb.doc(id).set({
+      ...payload,
+      deleted: true
+    });
+  }
+  catch (err) {
+    throw err
+  };
+};
+
+export async function postComment(payload) {
+  try {
+    await booksDb
+      .doc(payload.parentId)
+      .collection('comments')
+      .add(payload);
+  }
+  catch (err) { throw err };
+};
+
+export async function putComment({ id, ...payload }) {
+  try {
+    await booksDb
+      .doc(payload.parentId)
+      .collection('comments')
+      .doc(id)
+      .set(payload);
+  }
+  catch (err) {
+    throw err;
+  };
+};
+
+export async function deleteComment(payload, targetId, parentId) {
+  try {
+    await booksDb
+      .doc(parentId)
+      .collection('comments')
+      .doc(targetId)
+      .update(payload);
+  }
+  catch (err) { throw err };
 };

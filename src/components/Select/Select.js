@@ -7,6 +7,7 @@ export default ({
   type,
   name,
   id,
+  defaultValue,
   required = false,
   width,
   value = null,
@@ -40,6 +41,7 @@ export default ({
         type={type}
         ref={selectRef}
         name={name}
+        defaultValue={defaultValue}
         value={value}
         maxLength={maxLength}
         onChange={onChange}

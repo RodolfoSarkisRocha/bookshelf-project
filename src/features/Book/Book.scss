@@ -1,0 +1,134 @@
+@import "../../helpers/variables.scss";
+
+.book-details-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.book-details-card {
+  width: 100%;
+  background-color: #fff;
+  border-radius: 5px;
+  display: grid;
+  overflow-y: auto;
+  overflow-x: hidden;
+  word-break: normal;
+  white-space: pre-wrap;
+  grid-template-columns: 250px 1fr;
+  row-gap: 10px;
+  grid-template-areas:
+    "cover details"
+    "cover description"
+    "comments comments";
+  border: 1px solid #fafafa;
+  box-shadow: 0 0 5px 1px rgba($color: #000000, $alpha: 0.65);
+  padding: 24px;
+}
+
+.details-column {
+  grid-area: details;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+
+  h2 {
+    margin: 0;
+  }
+}
+
+.book-details-title {
+  font-size: 24px;
+}
+
+.book-details-cover {
+  grid-area: cover;
+  img {
+    width: 200px;
+    height: 300px;
+  }
+}
+
+.go-back-arrow {
+  -webkit-transition: font-size 0.5s;
+  -moz-transition: font-size 0.5s;
+  -o-transition: font-size 0.5s;
+  transition: font-size 0.5s;
+  font-size: 18px;
+  display: flex;
+  padding: 5px;
+  justify-content: center;
+  align-items: center;
+  margin: 0 10px;
+  cursor: pointer;
+  &:hover {
+    font-size: 20px;
+  }
+  &:hover div {
+    font-size: 20px;
+  }
+}
+
+.book-actions {
+  position: absolute;
+  right: 20px;
+  top: 125px;
+  opacity: 0.9;
+  svg {
+    font-size: 30px;
+    cursor: pointer;
+  }
+}
+
+.delete-button {
+  color: #ef5350;
+  margin-top: 10px;
+}
+
+.edit-button {
+  color: $primary-color;
+}
+
+.arrow-icon {
+  margin-right: 10px;
+}
+
+.book-details-description {
+  grid-area: description;
+  max-height: 200px;
+  overflow-y: auto;
+  text-align: justify;
+}
+.book-details-comments {
+  grid-area: comments;
+  width: 100%;
+}
+
+@media screen and (max-width: 1024px) {
+  .book-details-card {
+    height: max-content;
+    border-radius: 5px;
+    grid-template-columns: 250px 1fr;
+    align-items: center;
+    grid-template-areas:
+      "cover details"
+      "description description"
+      "comments comments";
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .book-details-card {
+    width: 100%;
+    height: max-content;
+    border-radius: 5px;
+    text-align: center;
+    grid-template-columns: 1fr;
+    row-gap: 15px;
+    grid-template-areas:
+      "cover"
+      "details"
+      "description"
+      "comments";
+  }
+}
