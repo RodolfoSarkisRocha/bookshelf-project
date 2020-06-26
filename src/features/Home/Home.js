@@ -4,6 +4,9 @@ import React, { Fragment, useState, useEffect } from 'react';
 // Styles
 import './Home.scss';
 
+// Default book cover
+import defaultCover from '../../assets/book-cover.jpg'
+
 // Components
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Sorter from '../../components/Sorter/Sorter';
@@ -31,11 +34,11 @@ function Home() {
   const { getDataUrlFromFile } = imageCompression;
   const mobileDisplay = window.innerWidth < 768;
   const defaultBookBody = {
-    title: null,
-    author: null,
-    description: null,
+    title: '',
+    author: '',
+    description: '',
     cover: null,
-    category: null,
+    category: JSON.stringify({ label: 'No Category', value: 'noCategory' }),
     deleted: false,
     creationDate: null,
     comments: []
@@ -57,11 +60,11 @@ function Home() {
   const [coverPreview, setCoverPreview] = useState(null);
   const [showBookDetails, setShowBookDetails] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
-  const [imgHasChanged, setImgHasChanged] = useState(false);
 
   // Use Effect
   useEffect(() => {
-    retrieveBooks()
+    retrieveBooks();
+    setBookBody(defaultBookBody);
   }, [])
 
   useEffect(() => {
@@ -140,8 +143,7 @@ function Home() {
     const bookBodyMapped = JSON.parse(JSON.stringify(bookBody));
 
     const {
-      category,
-      comments
+      category
     } = bookBodyMapped;
 
     // Getting the not stringyfied cover image 
@@ -257,7 +259,6 @@ function Home() {
           ...bookBody,
           cover: compressedImage
         });
-        setImgHasChanged(true)
       }
       catch (err) {
         toast.error('There was a problem with your image, try again or send a different image')
@@ -336,7 +337,7 @@ function Home() {
           </>
         }
         <div className='file-upload-buttons'>
-          <label className='file-upload-button' for='cover'>
+          <label className='file-upload-button' htmlFor='cover'>
             Choose a file
           </label>
           {coverPreview && <Button onClick={removeCover}>Remove</Button>}
@@ -352,7 +353,7 @@ function Home() {
         />
       </div>
       <div>
-        <label for='title'>Title: </label>
+        <label htmlFor='title'>Title: </label>
         <Input
           value={bookBody.title}
           onChange={onInputsChange}
@@ -364,7 +365,7 @@ function Home() {
         />
       </div>
       <div>
-        <label for='author'>Author: </label>
+        <label htmlFor='author'>Author: </label>
         <Input
           value={bookBody.author}
           onChange={onInputsChange}
@@ -376,9 +377,9 @@ function Home() {
         />
       </div>
       <div>
-        <label for='category'>Category: </label>
+        <label htmlFor='category'>Category: </label>
         <Select
-          value={bookBody?.category?.value}
+          value={bookBody?.category}
           type='select'
           placeholder='Select a category'
           onChange={onInputsChange}
@@ -389,7 +390,7 @@ function Home() {
         >
           {categoriesList.map(category => (
             <option
-              selected={JSON.stringify({ label: 'No Category', value: 'noCategory' })}
+              key={category.label}
               value={JSON.stringify(category)}>
               {category.label}
             </option>
@@ -397,7 +398,7 @@ function Home() {
         </Select>
       </div>
       <div>
-        <label for='description'>Description: </label>
+        <label htmlFor='description'>Description: </label>
         <TextArea
           value={bookBody.description}
           onChange={onInputsChange}
@@ -461,7 +462,7 @@ function Home() {
             </Button>
             {/* Sorting the books by categories retrived from the database */}
             {categoriesList.map(currentCategory => (
-              <div className='category-container'>
+              <div key={currentCategory.label} className='category-container'>
                 <div className='category-header'>
                   <div>
                     {currentCategory?.label}
@@ -482,7 +483,14 @@ function Home() {
                           if (book.category?.value === currentCategory?.value && book.deleted === false)
                             return (
                               <div key={book.id} className='book-item'>
-                                <img onClick={() => retrieveBookById(book.id)} className='book-cover' alt='book cover' src={book.cover} />
+                                <img
+                                  onClick={() => retrieveBookById(book.id)}
+                                  className='book-cover'
+                                  alt='book cover'
+                                  src={book.cover ?
+                                    book.cover :
+                                    defaultCover}
+                                />
                                 <div className='book-title'>{book.title}</div>
                               </div>
                             )
