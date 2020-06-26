@@ -19,14 +19,15 @@ import Spin from '../../components/Spin/Spin';
 import Input from '../../components/Input/Input';
 import TextArea from '../../components/TextArea/TextArea';
 import Select from '../../components/Select/Select';
-import { format } from 'date-fns';
+import { getUnixTime } from 'date-fns';
 import imageCompression from 'browser-image-compression';
 
 // Redux
 import { useDispatch, useSelector } from 'react-redux';
-import { getBooks, getCategories, postBook, getBookById, updateBook, dltBook } from '../../reducers/book'
+import { getBooks, postBook, getBookById, updateBook, dltBook } from '../../reducers/book'
 import Book from '../Book/Book';
 import { toast } from 'react-toastify';
+import { Link } from 'react-router-dom';
 
 function Home() {
 
@@ -60,6 +61,7 @@ function Home() {
   const [coverPreview, setCoverPreview] = useState(null);
   const [showBookDetails, setShowBookDetails] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [filterIconClass, setFilterIconClass] = useState(false);
 
   // Use Effect
   useEffect(() => {
@@ -157,7 +159,7 @@ function Home() {
     bookBodyMapped.category = isJson(category) ? JSON.parse(category) : category;
 
     // Creating a creation date 
-    bookBodyMapped.creationDate = format(new Date(), 'yyyy-MM-dd');
+    bookBodyMapped.creationDate = getUnixTime(new Date());
 
     if (!exists(category) || category === 'noCategory') {
       bookBodyMapped.category = { value: 'noCategory', label: 'No Category' }
@@ -284,13 +286,14 @@ function Home() {
   * @param {object} orderByParams params that are passed as payload to retrieve books function
   */
   function retrieveBooks(orderByParams) {
-    dispatch(getCategories());
-    const payload = {};
-    if (exists(orderByParams)) {
-      payload.sorterDirection = orderByParams.sorterDirection;
-      payload.dataIndex = orderByParams.dataIndex;
-    };
-    dispatch(getBooks(payload));
+    if (exists(orderByParams?.dataIndex) && exists(orderByParams?.sorterDirection)) {
+      const orderBy = {
+        sortBy: orderByParams.sorterDirection,
+        dataIndex: orderByParams.dataIndex
+      };
+      dispatch(getBooks(orderBy, 'orderBy'));
+    }
+    else dispatch(getBooks(null, null));
   };
 
   /**
@@ -432,6 +435,20 @@ function Home() {
     </>
   );
 
+  const formatQueryParam = (value) => {
+    const lowerWithHifen = value.replace(/[A-Z]/g,
+      camelLetter => `-${camelLetter.toLowerCase()}`);
+    return lowerWithHifen;
+  };
+
+  const getIconClass = () => {
+    const classMapped = new Map ([
+      [false, 'arrow-down'],
+      [true, 'arrow-up']
+    ]);
+    return classMapped.get(filterIconClass)
+  }
+
   return (
     <Fragment>
       {showBookDetails ?
@@ -445,7 +462,15 @@ function Home() {
         <>
           <Header
             title='Books'
-            extra={(<FontAwesomeIcon icon={['fas', 'filter']} />)}
+            extra={(
+              <Button
+                onClick={() => setFilterIconClass(!filterIconClass)}
+                icon={<FontAwesomeIcon icon={['fas', 'arrow-down']} />}
+                className={getIconClass()}
+              >
+                Filters
+              </Button>
+            )}
           >
             {<Sorter
               sorters={sorters}
@@ -467,13 +492,15 @@ function Home() {
                   <div>
                     {currentCategory?.label}
                   </div>
-                  <Button
-                    loading={false}
-                    loadingCss={{ color: '#f1f1f1', size: 16 }}
-                    icon={<FontAwesomeIcon icon={['fas', 'eye']} />}
-                  >
-                    View All
-              </Button>
+                  <Link to={`/category?category=${formatQueryParam(currentCategory.value)}`}>
+                    <Button
+                      loading={false}
+                      loadingCss={{ color: '#f1f1f1', size: 16 }}
+                      icon={<FontAwesomeIcon icon={['fas', 'eye']} />}
+                    >
+                      View All
+                  </Button>
+                  </Link>
                 </div>
                 <div className='category-section'>
                   {
@@ -514,7 +541,7 @@ function Home() {
       >
         {renderBookCreation()}
       </Modal>
-    </Fragment>
+    </Fragment >
   );
 };
 

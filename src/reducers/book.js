@@ -8,6 +8,9 @@ export const bookSlice = createSlice({
     bookBody: null,
     bookList: [],
     categoriesList: [],
+    createCommentLoading: false,
+    updateCommentLoading: false,
+    deleteCommentLoading: false,
     createBookLoading: false,
     deleteBookLoading: false,
     error: false,
@@ -24,10 +27,11 @@ export const bookSlice = createSlice({
 
 const { getBookSuccess, setLoading, getCategoriesSuccess, getBookByIdSuccess } = bookSlice.actions;
 
-export const getBooks = payload => async dispatch => {
+export const getBooks = (payload, filter) => async dispatch => {
   dispatch(setLoading({ loadingTarget: 'getBookLoading', loadingType: true }));
   try {
-    const response = await fetchBooks(payload);
+    await dispatch(getCategories());
+    const response = await fetchBooks(payload, filter);
     dispatch(getBookSuccess(response));
   }
   catch (err) {
@@ -146,7 +150,7 @@ export const createComment = (payload, callback) => async dispatch => {
 };
 
 export const dltComment = (payload, targetId, parentId) => async dispatch => {
-  dispatch(setLoading({ loadingTarget: 'deleteBookLoading', loadingType: true }));
+  dispatch(setLoading({ loadingTarget: 'deleteCommentLoading', loadingType: true }));
   try {
     await deleteComment(payload, targetId, parentId);
     dispatch(getBookById(parentId));
@@ -155,7 +159,7 @@ export const dltComment = (payload, targetId, parentId) => async dispatch => {
     toast.error('There was a problem deleting your comment, try again later!');
   }
   finally {
-    dispatch(setLoading({ loadingTarget: 'deleteBookLoading', loadingType: false }));
+    dispatch(setLoading({ loadingTarget: 'deleteCommentLoading', loadingType: false }));
   };
 };
 

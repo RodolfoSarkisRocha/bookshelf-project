@@ -8,6 +8,7 @@ export default ({
   loading,
   loadingCss,
   className,
+  color,
   type,
   icon,
   form }) => {
@@ -30,6 +31,7 @@ export default ({
     <button
       ref={buttonRef}
       type={type}
+      style={{ color }}
       onClick={handleClick}
       form={form}
       className={className ? `${className} ${defaultClassName}` : defaultClassName}
@@ -39,8 +41,8 @@ export default ({
           {loading ?
             <ClipLoader
               loading={true}
-              color={loadingCss.color}
-              size={loadingCss.size}
+              color={loadingCss?.color}
+              size={loadingCss?.size ?? 15}
             /> :
             icon ? icon : null
           }

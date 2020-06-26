@@ -30,7 +30,7 @@ export default props => {
 						<FontAwesomeIcon className='bottom-nav-icon' icon={['fas', 'home']} />
 						<div>Home</div>
 					</Link>
-					<Link className='bottom-nav-item' to='/'>
+					<Link className='bottom-nav-item' to='/category'>
 						<FontAwesomeIcon className='bottom-nav-icon' icon={['fas', 'list-ul']} />
 						<div>Category</div>
 					</Link>
