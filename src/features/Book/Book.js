@@ -1,11 +1,12 @@
 import React from 'react';
 import './Book.scss';
-import { format, parse, fromUnixTime } from 'date-fns';
+import { format, fromUnixTime } from 'date-fns';
 import { exists } from '../../utils/booleanUtils';
 import Header from '../../components/Header/Header';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Comments from './Comments/Comments';
 import { useSelector } from 'react-redux';
+import defaultCover from '../../assets/book-cover.jpg'
 
 export default ({ book, setShowBookDetails, editBook, deleteBook }) => {
 
@@ -57,7 +58,7 @@ export default ({ book, setShowBookDetails, editBook, deleteBook }) => {
         <div className='book-details-card'>
 
           <div className='book-details-cover'>
-            <img src={cover} alt='book-cover' />
+            <img src={cover ?? defaultCover} alt='book-cover' />
           </div>
 
           <div className='details-column'>
