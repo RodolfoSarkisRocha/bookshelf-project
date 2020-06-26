@@ -201,9 +201,9 @@ export default props => {
               )
             return null
           })}
-          {bookList.length === 0 && <Empty />}
         </div>
       }
+      {bookList.length === 0 && <Empty />}
     </>
   )
 }
