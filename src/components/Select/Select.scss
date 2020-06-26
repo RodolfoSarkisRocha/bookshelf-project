@@ -3,7 +3,15 @@
   flex-direction: column;
   justify-content: flex-start;
   margin-bottom: 5px;
-  background-color: #ffffff;
+  select {
+    background-color: rgba(172, 179, 228, 0.5);
+    border: none;
+    padding: 5px;
+    font-size: 12px;    
+    font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande", "Lucida Sans", Arial, sans-serif;
+    width: 100%;
+    outline: none;    
+  }
 }
 .select-style {
   border: 1px solid #f1f1f1;

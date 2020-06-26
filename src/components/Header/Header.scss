@@ -4,7 +4,7 @@
   width: 100%;
   color: #f1f1f1;
   background-color: $primary-color;
-  padding: 10px;
+  padding: 5px 10px;
   height: 45px;
   z-index: 9;
   overflow: hidden;
@@ -29,6 +29,7 @@
 .title-container {
   display: flex;
   justify-content: space-between;
+  align-items: center;
 }
 
 .filter-container {

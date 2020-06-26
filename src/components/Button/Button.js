@@ -8,6 +8,7 @@ export default ({
   loading,
   loadingCss,
   className,
+  color,
   type,
   icon,
   form }) => {
@@ -30,6 +31,7 @@ export default ({
     <button
       ref={buttonRef}
       type={type}
+      style={{ color }}
       onClick={handleClick}
       form={form}
       className={className ? `${className} ${defaultClassName}` : defaultClassName}

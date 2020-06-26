@@ -1,6 +1,6 @@
 import React from 'react';
 import './Book.scss';
-import { format, parse } from 'date-fns';
+import { format, parse, fromUnixTime } from 'date-fns';
 import { exists } from '../../utils/booleanUtils';
 import Header from '../../components/Header/Header';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -28,10 +28,10 @@ export default ({ book, setShowBookDetails, editBook, deleteBook }) => {
 
   function formatDate(date) {
     if (exists(date)) {
-      const newDate = parse(date, 'yyyy-MM-dd', new Date());
+      const newDate = fromUnixTime(date);
       return format(newDate, "do 'of' MMMM yyyy");
     }
-    return
+    return null
   }
 
   function safeNull(value) {
