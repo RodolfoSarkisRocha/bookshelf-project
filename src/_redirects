@@ -1,1 +1,3 @@
-/category category=:category  /category/:category  301
+/category? category=:category  /category/:category  301
+/category/* /category/ 301
+/* / 301
