@@ -32,23 +32,27 @@
 }
 
 .category-select {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  select {
+    color: #fff;
+  }
+  select > option {
+    font-size: 12px;
+    background-color: rgba(172, 179, 228, 1);
+    font-weight: bold;
+    color: #eaeaea;
+    &:hover {
+      background-color: #4a4e69;
+    }
+  }
+}
+
+.category-select-label {
   color: #fff;
   margin-bottom: 10px;
   margin-right: 10px;
-}
-
-select {
-  color: #fff;
-}
-
-select > option {
-  font-size: 12px;
-  background-color: rgba(172, 179, 228, 1);
-  font-weight: bold;
-  color: #eaeaea;
-  &:hover {
-    background-color: #4a4e69;
-  }
 }
 
 .category-book-item {

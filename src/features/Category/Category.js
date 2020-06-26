@@ -79,8 +79,8 @@ export default props => {
   }
 
   const renderFilterContent = () => (
-    <div className='flex-row-center'>
-      <div className='category-select'>
+    <div className='category-select'>
+      <div className='category-select-label'>
         Select the category to filter:
       </div>
       <Select
