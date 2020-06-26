@@ -175,13 +175,15 @@ export default props => {
             if (book.deleted === false)
               return (
                 <div key={book.id} className='category-book-item'>
-                  <img
-                    className='category-book-cover'
-                    alt='book cover'
-                    src={book.cover ?
-                      book.cover :
-                      defaultCover}
-                  />
+                  <div className='book-cover-container'>
+                    <img
+                      className='category-book-cover'
+                      alt='book cover'
+                      src={book.cover ?
+                        book.cover :
+                        defaultCover}
+                    />
+                  </div>
                   <div className='category-book-details'>
                     <div className='category-book-title'>{book.title}</div>
                     <div className='category-book-author'>by {book.author}</div>
