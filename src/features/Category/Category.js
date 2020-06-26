@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useHistory } from 'react-router-dom';
 import { getBooks } from '../../reducers/book';
 import { useDispatch, useSelector } from 'react-redux';
 import { exists } from '../../utils/booleanUtils';
@@ -32,11 +32,17 @@ export default props => {
 
   // State
   const useQuery = new URLSearchParams(useLocation().search);
+  const history = useHistory();
   const [categoryTitle, setCategoryTitle] = useState('Category');
   const [filterIconClass, setFilterIconClass] = useState('arrow-down');
   const [category, setCategory] = useState('noCategory');
-  const [initialRender, setInitialRender] = useState(true);
-  const [showDescriptions, setShowDescriptions] = useState([])
+  const [showDescriptions, setShowDescriptions] = useState([]);
+
+  const formatQueryParam = (value) => {
+    const lowerWithHifen = value.replace(/[A-Z]/g,
+      camelLetter => `-${camelLetter.toLowerCase()}`);
+    return lowerWithHifen;
+  };
 
   useEffect(() => {
     const defaultShowDescriptions = bookList.map(() => false);
@@ -54,13 +60,7 @@ export default props => {
       dispatch(getBooks({ fieldName: 'category', value: queryParamToCamelCase }, 'filterByField'));
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-  }, []);
-
-  useEffect(() => {
-    const isInitialRender = initialRender === true;
-    if (isInitialRender) return setInitialRender(false);
-    dispatch(getBooks({ fieldName: 'category', value: category }, 'filterByField'))
-  }, [category])
+  }, [category]);
 
   function formatDate(date) {
     if (exists(date)) {
@@ -80,8 +80,15 @@ export default props => {
 
   const onCategoryChange = (event) => {
     const value = event?.target?.value;
-
-    setCategory(value);
+    let newQuery;
+    if (value) {
+      newQuery = formatQueryParam(value);
+      history.push({
+        pathname: '/category',
+        search: `category=${newQuery}`
+      })
+      setCategory(value);
+    }
   }
 
   const renderFilterContent = () => (
@@ -135,7 +142,7 @@ export default props => {
 
         const classAlreadySet =
           (readMoreElements[index].classList.contains("read-more-visible") ||
-          readMoreElements[index].classList.contains("read-more-invisible"));
+            readMoreElements[index].classList.contains("read-more-invisible"));
 
         if (!classAlreadySet) {
           if (maxAllowedHeight > descriptionHeight)
