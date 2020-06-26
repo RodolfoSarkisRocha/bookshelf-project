@@ -1,3 +1,3 @@
-https://ibookshelf.netlify.app/category? category=:category  https://ibookshelf.netlify.app/category/:category  301
-https://ibookshelf.netlify.app/category/* https://ibookshelf.netlify.app/category/:splat 301
-https://ibookshelf.netlify.app/* https://ibookshelf.netlify.app/ 301
+/category category=:category  /category/:category  301
+/category/* /category 301
+/* / 301

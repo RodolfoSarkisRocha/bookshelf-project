@@ -13,11 +13,11 @@ import GoToTopBtn from './components/GoToTopBtn/GoToTopBtn';
 import { ToastContainer } from 'react-toastify';
 
 // Router
-import { BrowserRouter as Router, Redirect, Route, Switch } from 'react-router-dom';
+import { Redirect, Route, Switch, HashRouter } from 'react-router-dom';
 
 function App() {
   return (
-    <Router>
+    <HashRouter>
       <TopNav />
       <div className='content-container'>
         <Switch>
@@ -28,7 +28,7 @@ function App() {
       </div>
       <GoToTopBtn />
       <ToastContainer />
-    </Router>
+    </HashRouter>
   );
 }
 
