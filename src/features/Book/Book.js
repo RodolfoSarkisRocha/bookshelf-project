@@ -6,12 +6,14 @@ import Header from '../../components/Header/Header';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useSelector } from 'react-redux';
 import Spin from '../../components/Spin/Spin';
+import Comments from './Comments/Comments';
 
 export default ({ book, setShowBookDetails, editBook, deleteBook }) => {
 
   const deleteBookLoading = useSelector(state => state.deleteBookLoading);
 
   const {
+    id,
     cover,
     title,
     author,
@@ -68,7 +70,10 @@ export default ({ book, setShowBookDetails, editBook, deleteBook }) => {
                 {safeNull(description)}
               </div>
               <div className='book-details-comments'>
-                {safeNull(comments)}
+                <Comments
+                  commentsList={comments}
+                  parentId={id}
+                />
               </div>
             </div >
           </div>
