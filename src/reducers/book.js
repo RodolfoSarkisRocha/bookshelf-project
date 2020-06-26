@@ -96,12 +96,13 @@ export const updateBook = ({ cover, ...payloadMapped }, imageToDelete, callback)
       // from the new one
       await deleteImage(imageToDelete);
 
-      // Uploading image and getting it's download link
-      // to insert into payload body
+    }
+    // Uploading image and getting it's download link
+    // to insert into payload body
+    if (cover) {
       const imageDownloadUrl = await postImage(cover);
       payloadMapped.cover = imageDownloadUrl;
-    }
-    else payloadMapped.cover = cover;
+    };
 
     await putBook(payloadMapped);
 
