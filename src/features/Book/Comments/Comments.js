@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useReducer } from 'react';
 import './Comments.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Button from '../../../components/Button/Button';
 import { formatDistanceToNow, fromUnixTime, getUnixTime } from 'date-fns';
 import { exists } from '../../../utils/booleanUtils';
 import { toast } from 'react-toastify';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { createComment, dltComment, updateComment } from '../../../reducers/book';
+import { ClipLoader } from 'react-spinners';
 
 export default ({ commentsList = [], parentId }) => {
 
@@ -24,12 +25,19 @@ export default ({ commentsList = [], parentId }) => {
   useEffect(() => {
     const defaultEditingComment = commentsList.map(() => (false));
     setShowInputs(defaultEditingComment);
+    const defaultVisibleButtons = commentsList.map(() => (true));
+    setVisibleButtons(defaultVisibleButtons);
   }, [commentsList]);
 
   const [commentBody, setCommentBody] = useState(defaultCommentBody);
   const [showInputs, setShowInputs] = useState([]);
+  const [visibleButtons, setVisibleButtons] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [updateCommentBody, setUpdateCommentBody] = useState({ body: '', author: '' });
+
+  const createCommentLoading = useSelector(state => state.createCommentLoading);
+  const updateCommentLoading = useSelector(state => state.updateCommentLoading);
+  const deleteCommentLoading = useSelector(state => state.deleteCommentLoading);
 
   function handleInputsChange(event) {
     const target = event?.target;
@@ -101,6 +109,8 @@ export default ({ commentsList = [], parentId }) => {
   function handleShowInputs(index, currentComment) {
     const editingCommentCopy = JSON.parse(JSON.stringify(showInputs));
     editingCommentCopy[index] = true;
+    const visibleButtons = editingCommentCopy
+    setVisibleButtons(visibleButtons);
     setUpdateCommentBody(currentComment);
     setShowInputs(editingCommentCopy);
     setIsEditing(true);
@@ -109,6 +119,8 @@ export default ({ commentsList = [], parentId }) => {
   function handleCancelEdit(index) {
     const editingCommentCopy = JSON.parse(JSON.stringify(showInputs));
     editingCommentCopy[index] = false;
+    const visibleButtons = editingCommentCopy.map(() => true);
+    setVisibleButtons(visibleButtons);
     setShowInputs(editingCommentCopy);
     setIsEditing(false);
   }
@@ -151,6 +163,7 @@ export default ({ commentsList = [], parentId }) => {
       {commentsList.map((currentComment, currentCommentIndex) => {
         if (currentComment.deleted === false) {
           const isEditingComment = showInputs[currentCommentIndex] === true;
+          const isVisibleButton = visibleButtons[currentCommentIndex] === true;
           return (
             <div className='comments-item'>
               <div className='avatar'>
@@ -180,35 +193,47 @@ export default ({ commentsList = [], parentId }) => {
                     </div>
                   </div>
                   <div className='comments-options'>
-                    {isEditingComment &&
-                      <div className='comments-cancel'>
-                        <FontAwesomeIcon
-                          onClick={() => handleCancelEdit(currentCommentIndex)}
-                          icon={['fas', 'window-close']}
-                        />
-                      </div>
-                    }
-                    {isEditingComment ?
-                      <div className='comments-confirm-edit'>
-                        <FontAwesomeIcon
-                          onClick={() => handleUpdateComment(currentComment.id)}
-                          icon={['fas', 'check']}
-                        />
-                      </div> :
-                      <div className='comments-edit'>
-                        <FontAwesomeIcon
-                          onClick={() => handleShowInputs(currentCommentIndex, currentComment)}
-                          icon={['fas', 'edit']}
-                        />
-                      </div>
-                    }
-                    {!isEditingComment &&
-                      <div className='comments-delete'>
-                        <FontAwesomeIcon
-                          onClick={() => handleDeleteComment(currentComment)}
-                          icon={['fas', 'trash']}
-                        />
-                      </div>
+                    {updateCommentLoading || deleteCommentLoading ?
+                      <ClipLoader /> :
+                      <>
+
+                        {isEditingComment && isVisibleButton &&
+                          <div className='comments-cancel'>
+                            <FontAwesomeIcon
+                              onClick={() => handleCancelEdit(currentCommentIndex)}
+                              icon={['fas', 'window-close']}
+                            />
+                          </div>
+                        }
+
+                        {isEditingComment &&
+                          isVisibleButton ?
+                          <div className='comments-confirm-edit'>
+                            <FontAwesomeIcon
+                              onClick={() => handleUpdateComment(currentComment.id)}
+                              icon={['fas', 'check']}
+                            />
+                          </div> :
+                          isVisibleButton &&
+                          <div className='comments-edit'>
+                            <FontAwesomeIcon
+                              onClick={() => handleShowInputs(currentCommentIndex, currentComment)}
+                              icon={['fas', 'edit']}
+                            />
+                          </div>
+                        }
+
+                        {!isEditingComment &&
+                          isVisibleButton &&
+                          <div className='comments-delete'>
+                            <FontAwesomeIcon
+                              onClick={() => handleDeleteComment(currentComment)}
+                              icon={['fas', 'trash']}
+                            />
+                          </div>
+                        }
+
+                      </>
                     }
                   </div>
                 </div>
@@ -235,6 +260,7 @@ export default ({ commentsList = [], parentId }) => {
         <>
           < div className='comments-author'>
             <input
+              disabled={createCommentLoading}
               className='comments-author-input'
               placeholder='Enter your username'
               name='author'
@@ -245,6 +271,7 @@ export default ({ commentsList = [], parentId }) => {
 
           <div className='comments-input'>
             <textarea
+              disabled={createCommentLoading}
               value={commentBody.body}
               className='comments-textarea'
               name='body'
@@ -253,7 +280,7 @@ export default ({ commentsList = [], parentId }) => {
             />
           </div>
           <div className='comments-submit'>
-            <Button onClick={handlePostComment}>Comment</Button>
+            <Button loading={createCommentLoading || deleteCommentLoading} onClick={handlePostComment}>Comment</Button>
           </div>
         </>
       }

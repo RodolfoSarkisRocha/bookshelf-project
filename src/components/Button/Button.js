@@ -39,8 +39,8 @@ export default ({
           {loading ?
             <ClipLoader
               loading={true}
-              color={loadingCss.color}
-              size={loadingCss.size}
+              color={loadingCss?.color}
+              size={loadingCss?.size ?? 15}
             /> :
             icon ? icon : null
           }
